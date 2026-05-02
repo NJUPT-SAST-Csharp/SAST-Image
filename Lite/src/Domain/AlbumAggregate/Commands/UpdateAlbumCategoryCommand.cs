@@ -17,18 +17,14 @@ internal sealed class UpdateAlbumCategoryCommandHandler(
     ICategoryExistenceChecker checker
 ) : ICommandHandler<UpdateAlbumCategoryCommand>
 {
-    private readonly ICategoryExistenceChecker _checker = checker;
-
     public async ValueTask<Unit> Handle(
         UpdateAlbumCategoryCommand request,
         CancellationToken cancellationToken
     )
     {
-        await _checker.CheckAsync(request.Category, cancellationToken);
-
         var album = await repository.GetAsync(request.Album, cancellationToken);
 
-        album.UpdateCategory(request);
+        await album.UpdateCategory(request, checker);
 
         return Unit.Value;
     }

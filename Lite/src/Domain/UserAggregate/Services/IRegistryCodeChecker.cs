@@ -4,9 +4,5 @@ namespace Domain.UserAggregate.Services;
 
 public interface IRegistryCodeChecker
 {
-    public Task CheckAsync(
-        Username username,
-        RegistryCode code,
-        CancellationToken cancellationToken
-    );
+    public Task CheckAsync(Email email, RegistryCode code, CancellationToken cancellationToken);
 }

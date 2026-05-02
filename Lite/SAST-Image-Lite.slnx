@@ -3,9 +3,16 @@
     <Project Path="DomainLib/Domain.Abstractions/Domain.Abstractions.csproj" />
     <Project Path="DomainLib/Domain.Core/Domain.Core.csproj" />
   </Folder>
-  <Project Path="src/Application/Application.csproj" />
+  <Folder Name="/Tests/">
+    <File Path="test/test.runsettings" />
+    <Project Path="test/Domain.Tests/Domain.Tests.csproj" />
+    <Project Path="test/Infrastructure.Tests/Infrastructure.Tests.csproj" Id="886a5879-c321-4518-a0ff-85913e407d2b" />
+    <Project Path="test/Query.Tests/Query.Tests.csproj" Id="865f8acb-550b-40a2-a798-0e2fe42e2407" />
+    <Project Path="test/Storage.Tests/Storage.Tests.csproj" Id="ac1bdbe8-8317-4375-8374-f51c4d645593" />
+  </Folder>
   <Project Path="src/Domain/Domain.csproj" />
   <Project Path="src/Infrastructure/Infrastructure.csproj" />
+  <Project Path="src/Query/Query.csproj" />
+  <Project Path="src/Storage/Storage.csproj" />
   <Project Path="src/WebAPI/WebAPI.csproj" />
-  <Project Path="test/Domain.Tests/Domain.Tests.csproj" />
 </Solution>

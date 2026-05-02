@@ -1,5 +1,4 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -11,5 +10,4 @@
     <ProjectReference Include="..\..\Components\Exceptions\Exceptions.csproj" />
     <ProjectReference Include="..\SastImg.Domain\SastImg.Domain.csproj" />
   </ItemGroup>
-
 </Project>

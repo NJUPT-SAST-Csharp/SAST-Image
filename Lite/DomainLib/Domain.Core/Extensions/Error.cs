@@ -8,11 +8,10 @@ public record class Error(string Message, int Code = 400)
 
     public static readonly Error? None = null;
 
-    public static readonly Error Forbidden =
-        new(
-            "You don't have enough permission to complete the action.",
-            (int)HttpStatusCode.Forbidden
-        );
+    public static readonly Error Forbidden = new(
+        "You don't have enough permission to complete the action.",
+        (int)HttpStatusCode.Forbidden
+    );
 
     public static Error NotFound(string? message = null) =>
         new(message ?? "Couldn't find entity.", (int)HttpStatusCode.NotFound);

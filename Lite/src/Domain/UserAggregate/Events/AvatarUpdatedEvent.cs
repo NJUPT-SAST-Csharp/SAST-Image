@@ -4,4 +4,4 @@ using Domain.UserAggregate.UserEntity;
 
 namespace Domain.UserAggregate.Events;
 
-public sealed record AvatarUpdatedEvent(UserId User, IImageFile Avatar) : IDomainEvent { }
+public sealed record AvatarUpdatedEvent(UserId User, ImageFile Avatar) : IDomainEvent { }

@@ -1,66 +1,83 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Application.ImageServices;
-using Application.ImageServices.Queries;
+using System.Text.Json;
 using Domain.AlbumAggregate.AlbumEntity;
 using Domain.AlbumAggregate.Commands;
 using Domain.AlbumAggregate.ImageEntity;
-using Infrastructure.Shared;
+using Domain.Shared;
 using Mediator;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using Query.Images.Queries;
+using Storage.Images;
+using Storage.Images.Queries;
 using WebAPI.Utilities;
 using WebAPI.Utilities.Attributes;
 
 namespace WebAPI.Controllers;
 
-[Route("api")]
+[Route("api/v1")]
 [ApiController]
-public class ImageController(IMediator mediator) : ControllerBase
+public class ImageController(IMediator mediator, IOptions<JsonOptions> jsonOptions)
+    : AdvancedController
 {
     #region [Command/Post]
 
+    public readonly record struct AddImageRequestMetadata(ImageTitle Title, ImageTags Tags);
+
     [Authorize]
-    [RequestSizeLimit(1024 * 1024 * 50)]
+    [RequestSizeLimit(ImageFile.MaxBytes)]
     [HttpPost("albums/{albumId:long}/add")]
-    public async Task<IActionResult> AddImage(
+    [EndpointName("Add Image")]
+    [EndpointDescription("Add a new image to an album with metadata.")]
+    [MaybeNotFound]
+    public async Task<Ok<ImageId>> AddImage(
         [FromRoute] AlbumId albumId,
-        [FromForm] [Required] [FileValidator(0, 50)] IFormFile image,
-        [FromForm] [MaxLength(ImageTitle.MaxLength)] string title,
-        [FromForm] [Length(0, 10)] string[]? tags = null,
+        [FromForm] [Required] [FileValidator(ImageFile.MaxBytes)] IFormFile file,
+        [FromForm] [Required] string metadata,
         CancellationToken cancellationToken = default
     )
     {
-        using var file = ImageFile.Create(image.OpenReadStream());
-
-        AddImageCommand command = new(
-            albumId,
-            title.Bind<ImageTitle>(),
-            tags is null ? default : tags.Bind<ImageTags, string[]>(),
-            file,
-            User
+        var (title, tags) = JsonSerializer.Deserialize<AddImageRequestMetadata>(
+            metadata,
+            jsonOptions.Value.JsonSerializerOptions
         );
+
+        var image = await file.GetAsync(cancellationToken);
+        AddImageCommand command = new(albumId, title, tags, image, User);
         var id = await mediator.Send(command, cancellationToken);
+
         return Ok(id);
     }
 
-    public readonly record struct UpdateImageTagsRequest(ImageTags Tags);
+    public readonly record struct UpdateImageRequest(
+        ImageTitle? Title = null,
+        ImageTags? Tags = null
+    );
 
     [Authorize]
-    [HttpPost("albums/{albumId:long}/images/{imageId:long}/tags")]
-    public async Task<IActionResult> UpdateTags(
+    [HttpPatch("albums/{albumId:long}/images/{imageId:long}")]
+    [EndpointName("Update Image Metadata")]
+    [EndpointDescription("Update an image's title and tags.")]
+    [MaybeNotFound]
+    public async Task<NoContent> Update(
         [FromRoute] AlbumId albumId,
         [FromRoute] ImageId imageId,
-        [FromBody] UpdateImageTagsRequest request
+        [FromBody] UpdateImageRequest request
     )
     {
-        UpdateImageTagsCommand command = new(albumId, imageId, request.Tags, User);
+        UpdateImageCommand command = new(albumId, imageId, request.Title, request.Tags, User);
         await mediator.Send(command);
         return NoContent();
     }
 
     [Authorize]
     [HttpPost("albums/{albumId:long}/images/{imageId:long}/remove")]
-    public async Task<IActionResult> Remove(
+    [EndpointName("Remove Image")]
+    [EndpointDescription("Soft-delete an image from an album.")]
+    [MaybeNotFound]
+    public async Task<NoContent> Remove(
         [FromRoute] AlbumId albumId,
         [FromRoute] ImageId imageId,
         CancellationToken cancellationToken
@@ -73,7 +90,10 @@ public class ImageController(IMediator mediator) : ControllerBase
 
     [Authorize]
     [HttpPost("albums/{albumId:long}/images/{imageId:long}/restore")]
-    public async Task<IActionResult> Restore(
+    [EndpointName("Restore Image")]
+    [EndpointDescription("Restore a removed image in an album.")]
+    [MaybeNotFound]
+    public async Task<NoContent> Restore(
         [FromRoute] AlbumId albumId,
         [FromRoute] ImageId imageId,
         CancellationToken cancellationToken
@@ -86,7 +106,10 @@ public class ImageController(IMediator mediator) : ControllerBase
 
     [Authorize]
     [HttpPost("albums/{albumId:long}/images/{imageId:long}/like")]
-    public async Task<IActionResult> Like(
+    [EndpointName("Like Image")]
+    [EndpointDescription("Like an image in an album.")]
+    [MaybeNotFound]
+    public async Task<NoContent> Like(
         [FromRoute] AlbumId albumId,
         [FromRoute] ImageId imageId,
         CancellationToken cancellationToken
@@ -98,8 +121,11 @@ public class ImageController(IMediator mediator) : ControllerBase
     }
 
     [Authorize]
-    [HttpPost("albums/{albumId:long}/images/{imageId:long}/unlike")]
-    public async Task<IActionResult> Unlike(
+    [HttpDelete("albums/{albumId:long}/images/{imageId:long}/like")]
+    [EndpointName("Unlike Image")]
+    [EndpointDescription("Remove a like from an image.")]
+    [MaybeNotFound]
+    public async Task<NoContent> Unlike(
         [FromRoute] AlbumId albumId,
         [FromRoute] ImageId imageId,
         CancellationToken cancellationToken
@@ -112,7 +138,10 @@ public class ImageController(IMediator mediator) : ControllerBase
 
     [Authorize]
     [HttpDelete("albums/{albumId:long}/images/{imageId:long}")]
-    public async Task<IActionResult> Delete(
+    [EndpointName("Delete Image")]
+    [EndpointDescription("Permanently delete an image from an album.")]
+    [MaybeNotFound]
+    public async Task<NoContent> Delete(
         [FromRoute] AlbumId albumId,
         [FromRoute] ImageId imageId,
         CancellationToken cancellationToken
@@ -134,7 +163,9 @@ public class ImageController(IMediator mediator) : ControllerBase
         Location = ResponseCacheLocation.Any,
         VaryByQueryKeys = ["uploader", "album", "page"]
     )]
-    public async Task<IActionResult> GetImages(
+    [EndpointName("Get Images")]
+    [EndpointDescription("Get images filtered by uploader, album, or page.")]
+    public async Task<Ok<ImageDto[]>> GetImages(
         [FromQuery] long? uploader = null,
         [FromQuery] long? album = null,
         [FromQuery] int page = 0,
@@ -143,11 +174,13 @@ public class ImageController(IMediator mediator) : ControllerBase
     {
         ImagesQuery query = new(uploader, album, page, User);
         var images = await mediator.Send(query, cancellationToken);
-        return this.DataOrNotFound(images);
+        return Ok(images);
     }
 
     [HttpGet("images/{id:long}")]
-    public async Task<IActionResult> GetImage(
+    [EndpointName("Get Image File")]
+    [EndpointDescription("Get an image file by ID and kind.")]
+    public async Task<Results<NotFound, PhysicalFileHttpResult>> GetImageFile(
         [FromRoute] ImageId id,
         [FromQuery] ImageKind kind = ImageKind.Thumbnail,
         CancellationToken cancellationToken = default
@@ -155,31 +188,21 @@ public class ImageController(IMediator mediator) : ControllerBase
     {
         ImageFileQuery query = new(id, kind, User);
         var image = await mediator.Send(query, cancellationToken);
-        return this.ImageOrNotFound(image);
-    }
-
-    [Authorize]
-    [HttpGet("images/{id:long}/info")]
-    public async Task<IActionResult> GetDetailedImage(
-        [FromRoute] ImageId id,
-        CancellationToken cancellationToken
-    )
-    {
-        DetailedImageQuery query = new(id, User);
-        var image = await mediator.Send(query, cancellationToken);
-        return this.DataOrNotFound(image);
+        return image is null ? NotFound() : Image(image.Value);
     }
 
     [Authorize]
     [HttpGet("albums/{albumId:long}/images/removed")]
-    public async Task<IActionResult> GetRemovedImages(
+    [EndpointName("Get Removed Images")]
+    [EndpointDescription("Get removed images for an album.")]
+    public async Task<Ok<ImageDto[]>> GetRemovedImages(
         [FromRoute] AlbumId albumId,
         CancellationToken cancellationToken
     )
     {
         RemovedImagesQuery query = new(albumId, User);
         var images = await mediator.Send(query, cancellationToken);
-        return this.DataOrNotFound(images);
+        return Ok(images);
     }
 
     #endregion

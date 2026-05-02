@@ -5,20 +5,13 @@ using Domain.Shared.Converter;
 namespace Domain.UserAggregate.UserEntity;
 
 [OpenJsonConverter<Biography, string>]
-public readonly record struct Biography
+public readonly record struct Biography(string Value)
     : IValueObject<Biography, string>,
         IFactoryConstructor<Biography, string>
 {
     public static readonly Biography Empty = new(string.Empty);
 
     public const int MaxLength = 50;
-
-    public string Value { get; }
-
-    internal Biography(string value)
-    {
-        Value = value;
-    }
 
     public static bool TryCreateNew(string input, [NotNullWhen(true)] out Biography newObject)
     {

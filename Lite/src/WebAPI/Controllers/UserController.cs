@@ -1,75 +1,75 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Application.UserServices.Queries;
-using Domain.UserAggregate.Commands;
+using Domain.Shared;
+using Domain.UserAggregate.Commands.Profile;
 using Domain.UserAggregate.UserEntity;
-using Infrastructure.Shared;
 using Mediator;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Query.Users.Queries;
+using Storage.Users.Queries;
 using WebAPI.Utilities;
 using WebAPI.Utilities.Attributes;
 
 namespace WebAPI.Controllers;
 
-[Route("api/users")]
+[Route("api/v1/users")]
 [ApiController]
-public sealed class UserController(IMediator mediator) : ControllerBase
+public sealed class UserController(IMediator mediator) : AdvancedController
 {
     #region [Command/Post]
 
 
-    public readonly record struct UpdateNicknameRequest(Nickname Nickname);
+    public readonly record struct UpdateProfileRequest(
+        Nickname? Nickname = null,
+        Biography? Biography = null
+    );
 
     [Authorize]
-    [HttpPost("nickname")]
-    public async Task<IActionResult> UpdateNickname(
-        [FromBody] [Required] UpdateNicknameRequest request,
+    [HttpPatch("profile")]
+    [EndpointName("Update Profile")]
+    [EndpointDescription("Update the current user's profile information.")]
+    [MaybeNotFound]
+    public async Task<NoContent> UpdateProfile(
+        [FromBody, Required] UpdateProfileRequest request,
         CancellationToken cancellationToken
     )
     {
-        UpdateNicknameCommand command = new(request.Nickname, User);
-        await mediator.Send(command, cancellationToken);
-        return NoContent();
-    }
-
-    public readonly record struct UpdateBiographyRequest(Biography Biography);
-
-    [Authorize]
-    [HttpPost("biography")]
-    public async Task<IActionResult> UpdateBiography(
-        [FromBody] [Required] UpdateBiographyRequest request,
-        CancellationToken cancellationToken
-    )
-    {
-        UpdateBiographyCommand command = new(request.Biography, User);
+        UpdateProfileCommand command = new(request.Nickname, request.Biography, User);
         await mediator.Send(command, cancellationToken);
         return NoContent();
     }
 
     [Authorize]
-    [HttpPost("avatar")]
-    public async Task<IActionResult> UpdateAvatar(
-        [FromForm] [FileValidator(0, 3)] [Required] IFormFile avatar,
+    [HttpPut("avatar")]
+    [RequestSizeLimit(ImageFile.MaxBytes)]
+    [EndpointName("Update Avatar")]
+    [EndpointDescription("Update the current user's avatar image.")]
+    [MaybeNotFound]
+    public async Task<NoContent> UpdateAvatar(
+        [FromForm, Required] [FileValidator(ImageFile.MaxBytes)] IFormFile file,
         CancellationToken cancellationToken
     )
     {
-        using var file = ImageFile.Create(avatar.OpenReadStream());
-
-        UpdateAvatarCommand command = new(file, User);
+        var avatar = await file.GetAsync(cancellationToken);
+        UpdateAvatarCommand command = new(avatar, User);
         await mediator.Send(command, cancellationToken);
         return NoContent();
     }
 
     [Authorize]
-    [HttpPost("header")]
-    public async Task<IActionResult> UpdateHeader(
-        [FromForm] [FileValidator(0, 10)] [Required] IFormFile header,
+    [HttpPut("header")]
+    [RequestSizeLimit(ImageFile.MaxBytes)]
+    [EndpointName("Update Header")]
+    [EndpointDescription("Update the current user's header image.")]
+    [MaybeNotFound]
+    public async Task<NoContent> UpdateHeader(
+        [FromForm, Required] [FileValidator(ImageFile.MaxBytes)] IFormFile file,
         CancellationToken cancellationToken
     )
     {
-        using var file = ImageFile.Create(header.OpenReadStream());
-
-        UpdateHeaderCommand command = new(file, User);
+        var header = await file.GetAsync(cancellationToken);
+        UpdateHeaderCommand command = new(header, User);
         await mediator.Send(command, cancellationToken);
         return NoContent();
     }
@@ -79,36 +79,42 @@ public sealed class UserController(IMediator mediator) : ControllerBase
     #region [Query/Get]
 
     [HttpGet("{id:long}/avatar")]
-    public async Task<IActionResult> GetAvatar(
+    [EndpointName("Get User Avatar")]
+    [EndpointDescription("Get a user's avatar image by user ID.")]
+    public async Task<Results<NotFound, PhysicalFileHttpResult>> GetAvatar(
         [FromRoute] UserId id,
         CancellationToken cancellationToken
     )
     {
         var query = new UserAvatarQuery(id);
         var result = await mediator.Send(query, cancellationToken);
-        return this.AvatarOrNotFound(result);
+        return result is null ? NotFound() : Image(result.Value);
     }
 
     [HttpGet("{id:long}/header")]
-    public async Task<IActionResult> GetHeader(
+    [EndpointName("Get User Header")]
+    [EndpointDescription("Get a user's header image by user ID.")]
+    public async Task<Results<NotFound, PhysicalFileHttpResult>> GetHeader(
         [FromRoute] UserId id,
         CancellationToken cancellationToken
     )
     {
         var query = new UserHeaderQuery(id);
         var result = await mediator.Send(query, cancellationToken);
-        return this.HeaderOrNotFound(result);
+        return result is null ? NotFound() : Image(result.Value);
     }
 
     [HttpGet("{id:long}/profile")]
-    public async Task<IActionResult> GetProfileInfo(
+    [EndpointName("Get User Profile")]
+    [EndpointDescription("Get a user's public profile information by user ID.")]
+    public async Task<Results<NotFound, Ok<UserProfileDto>>> GetProfileInfo(
         [FromRoute] UserId id,
         CancellationToken cancellationToken
     )
     {
         var query = new UserProfileQuery(id);
         var result = await mediator.Send(query, cancellationToken);
-        return this.DataOrNotFound(result);
+        return result is null ? NotFound() : Ok(result);
     }
 
     #endregion

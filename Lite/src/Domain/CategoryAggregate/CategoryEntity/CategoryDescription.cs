@@ -3,17 +3,11 @@ using Domain.Entity;
 
 namespace Domain.CategoryAggregate.CategoryEntity;
 
-public readonly record struct CategoryDescription
+public readonly record struct CategoryDescription(string Value)
     : IValueObject<CategoryDescription, string>,
         IFactoryConstructor<CategoryDescription, string>
 {
     public const int MaxLength = 100;
-    public string Value { get; }
-
-    internal CategoryDescription(string value)
-    {
-        Value = value;
-    }
 
     public static bool TryCreateNew(
         string input,

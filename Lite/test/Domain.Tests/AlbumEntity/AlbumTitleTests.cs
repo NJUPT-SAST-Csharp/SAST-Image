@@ -6,43 +6,39 @@ namespace Domain.Tests.AlbumEntity;
 [TestClass]
 public class AlbumTitleTests
 {
-    [DataRow(null)]
-    [DataRow("")]
-    [DataRow("   ")]
-    [DataRow("                                                                            ")]
-    [TestMethod]
-    public void Return_False_When_Create_From_NullOrWhitespace(string value)
-    {
-        bool result = AlbumDescription.TryCreateNew(value, out var _);
-
-        result.ShouldBeFalse();
-    }
+    private static readonly IEnumerable<object?[]> invalid_values =
+    [
+        [null],
+        [""],
+        ["   "],
+        [string.Empty.PadRight(AlbumTitle.MaxLength + 1, 'a')],
+        [string.Empty.PadRight(AlbumTitle.MinLength - 1, 'a')],
+    ];
 
     [TestMethod]
-    public void Return_False_When_Create_From_Too_Long()
+    [DynamicData(nameof(invalid_values))]
+    public void Return_False_When_Create_From_Invalid(string value)
     {
-        string value = new('a', AlbumTitle.MaxLength + 1);
-
         bool result = AlbumTitle.TryCreateNew(value, out var _);
 
         result.ShouldBeFalse();
     }
 
+    private static readonly IEnumerable<object[]> valid_values =
+    [
+        ["album"],
+        ["相册"],
+        ["🐰🦊🐺🐻‍❄️"],
+        [string.Empty.PadRight(AlbumTitle.MaxLength, 'a')],
+        [string.Empty.PadRight(AlbumTitle.MaxLength - 1, 'a')],
+        [string.Empty.PadRight(AlbumTitle.MinLength, 'a')],
+        [string.Empty.PadRight(AlbumTitle.MinLength + 1, 'a')],
+    ];
+
     [TestMethod]
-    public void Return_True_When_Create_From_MaxLength()
+    [DynamicData(nameof(valid_values))]
+    public void Return_True_When_Create_From_Valid(string value)
     {
-        string value = new('a', AlbumTitle.MaxLength);
-
-        bool result = AlbumTitle.TryCreateNew(value, out var _);
-
-        result.ShouldBeTrue();
-    }
-
-    [TestMethod]
-    public void Return_True_When_Create_From_Valid()
-    {
-        const string value = "album";
-
         bool result = AlbumTitle.TryCreateNew(value, out var _);
 
         result.ShouldBeTrue();

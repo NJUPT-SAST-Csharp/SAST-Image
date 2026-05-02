@@ -7,6 +7,7 @@ namespace Domain.UserAggregate.Commands;
 public sealed record RegisterCommand(
     Username Username,
     Nickname Nickname,
+    Email Email,
     PasswordInput Password,
     RegistryCode Code
 ) : ICommand<JwtToken>;

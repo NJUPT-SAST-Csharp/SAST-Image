@@ -5,7 +5,7 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Mediator.Abstractions" Version="3.0.1" />
+    <PackageReference Include="Mediator.Abstractions" Version="3.0.2" />
     <PackageReference Include="IdGen" Version="3.0.7" />
   </ItemGroup>
 </Project>

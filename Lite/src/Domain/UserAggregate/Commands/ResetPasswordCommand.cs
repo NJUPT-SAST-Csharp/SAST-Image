@@ -17,7 +17,10 @@ internal sealed class ResetPasswordCommandHandler(
     IPasswordGenerator generator
 ) : ICommandHandler<ResetPasswordCommand>
 {
-    public async ValueTask<Unit> Handle(ResetPasswordCommand command, CancellationToken cancellationToken)
+    public async ValueTask<Unit> Handle(
+        ResetPasswordCommand command,
+        CancellationToken cancellationToken
+    )
     {
         var user = await repository.GetAsync(command.Actor.Id, cancellationToken);
 

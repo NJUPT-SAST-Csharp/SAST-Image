@@ -1,23 +1,17 @@
 using System.Text.Json;
 using Infrastructure;
+using Microsoft.AspNetCore.OpenApi.Generated;
 using WebAPI.Exceptions;
 using WebAPI.Utilities;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-builder.Services.AddInfrastructureServices(builder.Configuration);
-builder.Services.AddUserServices(builder.Configuration).AddJwtAuth(builder.Configuration);
-builder.Services.AddAlbumServices();
-builder.Services.AddImageServices();
-builder.Services.AddCategoryServices();
-
+builder.AddServices();
 builder.Services.AddExceptionHandlers();
-
-builder.Logging.AddLogger();
-
 builder.Services.AddResponseCaching();
-
+builder.Services.AddHealthChecks();
+builder.Services.AddOpenApi(options => options.AddSchemaTransformer<OpenApiSchemaTransformer>());
+builder.Logging.AddLogger();
 builder
     .Services.AddControllers()
     .AddJsonOptions(options =>
@@ -28,18 +22,9 @@ builder
 
 var app = builder.Build();
 
-app.UseCors(cors =>
-    cors.AllowAnyMethod().AllowAnyHeader().SetIsOriginAllowed(origin => true).AllowCredentials()
-);
+app.MapHealthChecks("/api/v1/health");
 
-app.UseResponseCaching();
+if (app.Environment.IsDevelopment())
+    app.MapOpenApi("/api/v1.json");
 
-app.UseExceptionHandler(op => { });
-
-app.UseAuthentication();
-
-app.UseAuthorization();
-
-app.MapControllers();
-
-app.Run();
+app.RunBackend();

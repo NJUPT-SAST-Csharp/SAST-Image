@@ -21,11 +21,8 @@ internal sealed class CreateCategoryCommandHandler(
         CancellationToken cancellationToken
     )
     {
-        await checker.CheckAsync(command.Name, cancellationToken);
+        var id = await Category.CreateAsync(command, checker, repository, cancellationToken);
 
-        var category = new Category(command);
-        await repository.AddAsync(category, cancellationToken);
-
-        return category.Id;
+        return id;
     }
 }

@@ -1,5 +1,4 @@
-﻿using Domain.Extensions;
-using Domain.UserAggregate.Services;
+﻿using Domain.UserAggregate.Services;
 using Domain.UserAggregate.UserEntity;
 using Mediator;
 

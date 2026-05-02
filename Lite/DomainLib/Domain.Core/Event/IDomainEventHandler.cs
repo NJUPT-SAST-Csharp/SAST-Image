@@ -1,7 +1,6 @@
-﻿using Domain.Event;
-using Mediator;
+﻿using Mediator;
 
-namespace Domain.Core.Event;
+namespace Domain.Event;
 
 public interface IDomainEventHandler<TDomainEvent> : INotificationHandler<TDomainEvent>
     where TDomainEvent : IDomainEvent { }

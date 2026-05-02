@@ -9,19 +9,6 @@ public class ImageTitleTests
     [DataRow(null)]
     [DataRow("")]
     [DataRow("   ")]
-    [DataRow("                                                                            ")]
-    [TestMethod]
-    public void Return_True_When_Create_From_NullOrWhitespace(string value)
-    {
-        bool result = ImageTitle.TryCreateNew(value, out var _);
-
-        result.ShouldBeTrue();
-    }
-
-    [DataRow(null)]
-    [DataRow("")]
-    [DataRow("   ")]
-    [DataRow("                                                                            ")]
     [TestMethod]
     public void Should_Set_Empty_When_Create_From_NullOrWhiteSpace(string value)
     {
@@ -30,31 +17,21 @@ public class ImageTitleTests
         image.Value.ShouldBe(string.Empty);
     }
 
-    [TestMethod]
-    public void Return_False_When_Create_From_Too_Long()
-    {
-        string value = new('a', ImageTitle.MaxLength + 1);
-
-        bool result = ImageTitle.TryCreateNew(value, out var _);
-
-        result.ShouldBeFalse();
-    }
-
-    [TestMethod]
-    public void Return_True_When_Create_From_MaxLength()
-    {
-        string value = new('a', ImageTitle.MaxLength);
-
-        bool result = ImageTitle.TryCreateNew(value, out var _);
-
-        result.ShouldBeTrue();
-    }
+    private static readonly IEnumerable<object[]> valid_values =
+    [
+        [""],
+        ["  "],
+        ["image"],
+        ["图片"],
+        ["🐰🦊🐺🐻‍❄️"],
+        [string.Empty.PadRight(ImageTitle.MaxLength, 'a')],
+        [string.Empty.PadRight(ImageTitle.MaxLength - 1, 'a')],
+    ];
 
     [TestMethod]
-    public void Return_True_When_Create_From_Valid()
+    [DynamicData(nameof(valid_values))]
+    public void Return_True_When_Create_From_Valid(string value)
     {
-        const string value = "image";
-
         bool result = ImageTitle.TryCreateNew(value, out var _);
 
         result.ShouldBeTrue();
@@ -114,5 +91,13 @@ public class ImageTitleTests
         ImageTitle.TryCreateNew(value2, out var image2);
 
         image1.ShouldNotBe(image2);
+    }
+}
+
+internal static class TestImageTitle
+{
+    extension(ImageTitle)
+    {
+        public static ImageTitle New => new("test_title");
     }
 }

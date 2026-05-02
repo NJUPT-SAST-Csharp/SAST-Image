@@ -10,10 +10,9 @@ public sealed class SkipableExceptionHandler : IExceptionHandler
         CancellationToken cancellationToken
     )
     {
-        if (exception is TaskCanceledException)
+        if (exception is OperationCanceledException)
         {
             httpContext.Response.StatusCode = StatusCodes.Status499ClientClosedRequest;
-
             return ValueTask.FromResult(true);
         }
 

@@ -1,6 +1,4 @@
-﻿using Domain.Event;
-
-namespace Domain.Core.Event;
+﻿namespace Domain.Event;
 
 public interface IDomainEventPublisher
 {

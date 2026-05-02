@@ -5,7 +5,7 @@ using Domain.Shared.Converter;
 namespace Domain.AlbumAggregate.AlbumEntity;
 
 [OpenJsonConverter<AccessLevel, AccessLevelValue>]
-public readonly record struct AccessLevel
+public readonly record struct AccessLevel(AccessLevelValue Value)
     : IValueObject<AccessLevel, AccessLevelValue>,
         IFactoryConstructor<AccessLevel, AccessLevelValue>,
         IComparable<AccessLevel>
@@ -13,15 +13,11 @@ public readonly record struct AccessLevel
     public const int MinValue = (int)AccessLevelValue.Private;
     public const int MaxValue = (int)AccessLevelValue.PublicReadWrite;
 
-    public AccessLevelValue Value { get; }
-
     public static readonly AccessLevel Private = new(AccessLevelValue.Private);
     public static readonly AccessLevel AuthReadOnly = new(AccessLevelValue.AuthReadOnly);
     public static readonly AccessLevel AuthReadWrite = new(AccessLevelValue.AuthReadWrite);
     public static readonly AccessLevel PublicReadOnly = new(AccessLevelValue.PublicReadOnly);
     public static readonly AccessLevel PublicReadWrite = new(AccessLevelValue.PublicReadWrite);
-
-    internal AccessLevel(AccessLevelValue value) => Value = value;
 
     public static bool TryCreateNew(
         AccessLevelValue input,
@@ -52,7 +48,7 @@ public readonly record struct AccessLevel
     public static bool operator >(AccessLevel left, AccessLevel right) => left.CompareTo(right) > 0;
 }
 
-public enum AccessLevelValue
+public enum AccessLevelValue : byte
 {
     Private,
     AuthReadOnly,

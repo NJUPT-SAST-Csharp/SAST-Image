@@ -97,24 +97,10 @@ public sealed class DomainExceptionHandler : IExceptionHandler
                 Type = "https://datatracker.ietf.org/doc/html/rfc9110#section-15.5.10",
             },
 
-            CollaboratorsNotFoundException => new()
-            {
-                Status = StatusCodes.Status404NotFound,
-                Title = $"Couldn't find specific users.",
-                Type = "https://datatracker.ietf.org/doc/html/rfc9110#section-15.5.5",
-            },
-
             ImageNotFoundException ex => new()
             {
                 Status = StatusCodes.Status404NotFound,
                 Title = $"Couldn't find image with id [{ex.ImageId.Value}] in this album.",
-                Type = "https://datatracker.ietf.org/doc/html/rfc9110#section-15.5.5",
-            },
-
-            ImageTagsNotFoundException => new()
-            {
-                Status = StatusCodes.Status404NotFound,
-                Title = $"Couldn't find specific tags.",
                 Type = "https://datatracker.ietf.org/doc/html/rfc9110#section-15.5.5",
             },
 

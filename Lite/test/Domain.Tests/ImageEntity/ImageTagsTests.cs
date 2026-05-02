@@ -7,7 +7,7 @@ namespace Domain.Tests.ImageEntity;
 public class ImageTagsTests
 {
     [TestMethod]
-    public void Return_False_When_Too_Many_ImageTags()
+    public void Return_False_When_Too_Many_Elements()
     {
         string[] imageTags_more_than_MaxCount =
         [
@@ -22,7 +22,7 @@ public class ImageTagsTests
     [TestMethod]
     public void Return_True_When_Create_From_Valid()
     {
-        const int collaborator_count = ImageTags.MaxCount - 1;
+        const int tags_count = ImageTags.MaxCount - 1;
 
         string[] valid_ImageTags =
         [
@@ -31,7 +31,8 @@ public class ImageTagsTests
 
         ImageTags.TryCreateNew(valid_ImageTags, out var imageTags);
 
-        imageTags.Value.Length.ShouldBe(collaborator_count);
+        Assert.IsNotNull(imageTags);
+        imageTags.Value.Length.ShouldBe(tags_count);
     }
 
     [TestMethod]
@@ -51,7 +52,7 @@ public class ImageTagsTests
     }
 
     [TestMethod]
-    public void Should_Not_Contain_Duplicate_ImageTags()
+    public void Should_Not_Contain_Duplicate_Elements()
     {
         const int duplicate_id = 0;
         const int duplicate_count = ImageTags.MaxCount / 2;
@@ -62,6 +63,7 @@ public class ImageTagsTests
 
         _ = ImageTags.TryCreateNew(imageTags_with_duplicate_ones, out var imageTags);
 
+        Assert.IsNotNull(imageTags);
         imageTags.Value.ShouldBeUnique();
     }
 
@@ -77,13 +79,33 @@ public class ImageTagsTests
 
         ImageTags.TryCreateNew(valid_ImageTags, out var imageTags);
 
+        Assert.IsNotNull(imageTags);
         imageTags.Value.Length.ShouldBe(collaborator_count);
+    }
+
+    [TestMethod]
+    public void Should_Equal_When_Create_From_Same_Set_With_No_Order()
+    {
+        string[] imageTags =
+        [
+            .. Enumerable.Range(default, ImageTags.MaxCount - 1).Select(index => index.ToString()),
+        ];
+
+        ImageTags.TryCreateNew(imageTags, out var imageTags1);
+        Random.Shared.Shuffle(imageTags);
+        ImageTags.TryCreateNew(imageTags, out var imageTags2);
+        Assert.IsNotNull(imageTags1);
+        Assert.IsNotNull(imageTags2);
+
+        imageTags1.Equals(imageTags2).ShouldBeTrue();
+        (imageTags1 == imageTags2).ShouldBeTrue();
+        EqualityComparer<ImageTags>.Default.Equals(imageTags1, imageTags2).ShouldBeTrue();
     }
 
     [TestMethod]
     public void Return_True_When_Create_From_Empty()
     {
-        string[] empty_imageTags = [.. ImageTags.Empty.Value.Select(i => i.ToString())];
+        string[] empty_imageTags = [.. new ImageTags().Value.Select(i => i.ToString())];
 
         bool result = ImageTags.TryCreateNew(empty_imageTags, out var _);
 
@@ -101,5 +123,13 @@ public class ImageTagsTests
         bool result = ImageTags.TryCreateNew(maxcount_imageTags, out var _);
 
         result.ShouldBeTrue();
+    }
+}
+
+public static class TestImageTags
+{
+    extension(ImageTags)
+    {
+        public static ImageTags New => new([new("quin"), new("ywwuyi")]);
     }
 }

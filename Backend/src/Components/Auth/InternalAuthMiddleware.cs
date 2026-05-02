@@ -51,9 +51,10 @@ internal sealed class InternalAuthMiddleware(RequestDelegate next)
             }
         }
 
-        ClaimsIdentity identity = new(
-            [new Claim(nameof(UserId), idValues[0]!), new Claim(nameof(Role), roleValues[0]!)]
-        );
+        ClaimsIdentity identity = new([
+            new Claim(nameof(UserId), idValues[0]!),
+            new Claim(nameof(Role), roleValues[0]!),
+        ]);
         context.User = new(identity);
 
         await next(context);

@@ -1,54 +1,42 @@
-﻿using System.Collections.ObjectModel;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 using Domain.Entity;
 
 namespace Domain.UserAggregate.UserEntity;
 
-public sealed class Roles
-    : ReadOnlyCollection<Role>,
-        IValueObject<Roles, IReadOnlyCollection<Role>>,
-        IFactoryConstructor<Roles, IEnumerable<Role>>
+[Flags]
+public enum Role : byte
 {
-    public IReadOnlyCollection<Role> Value => [.. Items];
+    User = 1,
+    Admin = User << 1,
+}
 
-    internal Roles(IList<Role> list)
-        : base(list) { }
-
-    public Roles()
-        : this([]) { }
-
-    public bool Equals(Roles? other)
-    {
-        if (other is null)
-            return false;
-        if (ReferenceEquals(this, other))
-            return true;
-
-        return Items.SequenceEqual(other.Items);
-    }
+public sealed class Roles() : ValueObjects<Roles, Role>, IFactoryConstructor<Roles, Role[]>
+{
+    internal Roles(params Role[] roles)
+        : this() => Value = roles;
 
     public static bool TryCreateNew(
-        IEnumerable<Role> input,
-        [NotNullWhen(true)] out Roles? newObject
+        Role[] input,
+        [MaybeNullWhen(false), NotNullWhen(true)] out Roles? newObject
     )
     {
-        if (input.Any(role => !Enum.IsDefined(role)))
+        newObject = default;
+        if (input.Length == 0)
         {
-            newObject = null;
-            return false;
+            newObject = new();
+            return true;
         }
 
-        newObject = new(input.ToList());
+        HashSet<Role> set = [];
+        for (int i = 0; i < input.Length; i++)
+        {
+            if (Enum.IsDefined(input[i]) is false)
+                return false;
+
+            set.Add(input[i]);
+        }
+
+        newObject = new() { Value = [.. set] };
         return true;
-    }
-
-    public override bool Equals(object? obj)
-    {
-        return Equals(obj as Roles);
-    }
-
-    public override int GetHashCode()
-    {
-        return Items.GetHashCode();
     }
 }

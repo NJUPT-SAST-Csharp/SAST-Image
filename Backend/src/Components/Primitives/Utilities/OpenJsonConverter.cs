@@ -9,14 +9,12 @@ namespace Primitives.Utilities;
 [AttributeUsage(AttributeTargets.Struct | AttributeTargets.Class)]
 public sealed class OpenJsonConverterAttribute<TObject, TValue>()
     : JsonConverterAttribute(typeof(OpenJsonConverter<TObject, TValue>))
-    where TObject : IValueObject<TObject, TValue>
-{ }
+    where TObject : IValueObject<TObject, TValue> { }
 
 [AttributeUsage(AttributeTargets.Struct | AttributeTargets.Class)]
 public sealed class OpenJsonConverterAttribute<TId>()
     : JsonConverterAttribute(typeof(OpenJsonConverter<TId>))
-    where TId : ITypedId<TId>, new()
-{ }
+    where TId : ITypedId<TId>, new() { }
 
 file sealed class OpenJsonConverter<TObject, TValue> : JsonConverter<TObject>
     where TObject : IValueObject<TObject, TValue>

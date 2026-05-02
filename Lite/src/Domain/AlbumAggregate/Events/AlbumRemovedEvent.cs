@@ -3,4 +3,4 @@ using Domain.Event;
 
 namespace Domain.AlbumAggregate.Events;
 
-public sealed record class AlbumRemovedEvent(AlbumId Album, AlbumStatus Status) : IDomainEvent { }
+public sealed record class AlbumRemovedEvent(AlbumId Album) : IDomainEvent { }

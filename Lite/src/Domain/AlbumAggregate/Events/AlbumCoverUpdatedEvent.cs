@@ -5,20 +5,10 @@ using Domain.Shared;
 
 namespace Domain.AlbumAggregate.Events;
 
-public sealed record class AlbumCoverUpdatedEvent(
-    AlbumId Album,
-    ImageId? ContainedImage,
-    IImageFile? CoverImage
-) : IDomainEvent
-{
-    public static AlbumCoverUpdatedEvent ContainedImageOrEmpty(
-        AlbumId album,
-        ImageId? containedImage
-    ) => new(album, containedImage, null);
+public abstract record class AlbumCoverUpdatedEvent(AlbumId Album) : IDomainEvent;
 
-    public static AlbumCoverUpdatedEvent UserCustomImage(AlbumId album, IImageFile coverImage) =>
-        new(album, null, coverImage);
+public sealed record class AlbumCoverUpdatedManuallyEvent(AlbumId Album, ImageFile File)
+    : AlbumCoverUpdatedEvent(Album);
 
-    public static AlbumCoverUpdatedEvent NewAddedImage(AlbumId album, IImageFile imageFile) =>
-        new(album, null, imageFile);
-}
+public sealed record class AlbumCoverUpdatedAutomaticallyEvent(AlbumId Album, ImageId? Image)
+    : AlbumCoverUpdatedEvent(Album);

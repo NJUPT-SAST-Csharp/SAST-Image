@@ -11,7 +11,7 @@ public interface ITypedId<TId, TValue> : IEquatable<TId>, IBaseTypedId
 
 public interface ITypedId<TId, TValue, TInput> : IEquatable<TId>, IBaseTypedId
     where TValue : IEquatable<TValue>
-    where TId : ITypedId<TId, TValue>
+    where TId : ITypedId<TId, TValue, TInput>
 {
     public static abstract TId GenerateNew(TInput requirement);
 }

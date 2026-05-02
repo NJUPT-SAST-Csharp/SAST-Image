@@ -9,6 +9,7 @@ namespace Domain.AlbumAggregate.ImageEntity;
 
 internal sealed class Image : EntityBase<ImageId>
 {
+    [Obsolete("For ORM", true)]
     private Image()
         : base(default) { }
 
@@ -46,11 +47,11 @@ internal sealed class Image : EntityBase<ImageId>
         AddDomainEvent(new ImageUnlikedEvent(Id, command.Actor.Id));
     }
 
-    public void UpdateTags(UpdateImageTagsCommand command)
+    public void Update(UpdateImageCommand command)
     {
         CheckAvailability();
 
-        AddDomainEvent(new ImageTagsUpdatedEvent(Id, command.Tags));
+        AddDomainEvent(new ImageUpdatedEvent(Id, command.Title, command.Tags));
     }
 
     public void Remove(RemoveImageCommand command)
@@ -103,53 +104,45 @@ internal sealed class Image : EntityBase<ImageId>
 
 internal static class ImageListExtensions
 {
-    public static Image FindById(this List<Image> images, ImageId id)
+    extension(List<Image> images)
     {
-        Image? image = images.FirstOrDefault(image => image.Id == id);
-        if (image is null)
-            ImageNotFoundException.Throw(id);
-
-        return image;
-    }
-
-    public static bool Contains(this List<Image> images, ImageId id)
-    {
-        return images.Any(image => image.Id == id);
-    }
-
-    public static bool NotContains(this List<Image> images, ImageId id)
-    {
-        return !images.Contains(id);
-    }
-
-    public static Image? LatestImage(this List<Image> images)
-    {
-        return images
-            .Where(image => image.IsAvailable)
-            .OrderByDescending(image => image.Id.Value)
-            .FirstOrDefault();
-    }
-
-    public static void DeleteImage(this List<Image> images, ImageId id)
-    {
-        Image? image = images.FirstOrDefault(image => image.Id == id);
-
-        if (image is null)
-            return;
-
-        image.AddDomainEvent(new ImageDeletedEvent(image.Id));
-        images.Remove(image);
-    }
-
-    public static int DeleteAllRemovedImages(this List<Image> images)
-    {
-        var imagesToBeRemoved = images.Where(image => image.IsRemoved).ToList();
-
-        foreach (var image in imagesToBeRemoved)
+        public Image FindById(ImageId id)
         {
-            DeleteImage(images, image.Id);
+            Image? image = images.FirstOrDefault(image => image.Id == id);
+            if (image is null)
+                ImageNotFoundException.Throw(id);
+
+            return image;
         }
 
-        return imagesToBeRemoved.Count;
+        public bool Contains(ImageId id)
+        {
+            return images.Any(image => image.Id == id);
+        }
+
+        public bool NotContains(ImageId id)
+        {
+            return !images.Contains(id);
+        }
+
+        public Image? LatestAvailableImage =>
+            images
+                .Where(image => image.IsAvailable)
+                .OrderByDescending(image => image.Id.Value)
+                .FirstOrDefault();
+
+        public Image? LatestImage =>
+            images.OrderByDescending(image => image.Id.Value).FirstOrDefault();
+
+        public void DeleteImage(ImageId id)
+        {
+            Image? image = images.FirstOrDefault(image => image.Id == id);
+
+            if (image is null)
+                return;
+
+            image.AddDomainEvent(new ImageDeletedEvent(image.Id));
+            images.Remove(image);
+        }
     }
 }

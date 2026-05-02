@@ -16,7 +16,6 @@ public sealed record class CreateAlbumCommand(
 
 internal sealed class CreateAlbumCommandHandler(
     IAlbumRepository repository,
-    IAlbumTitleUniquenessChecker titleChecker,
     ICategoryExistenceChecker categoryChecker
 ) : ICommandHandler<CreateAlbumCommand, AlbumId>
 {
@@ -25,13 +24,7 @@ internal sealed class CreateAlbumCommandHandler(
         CancellationToken cancellationToken
     )
     {
-        var id = await Album.CreateAsync(
-            command,
-            categoryChecker,
-            titleChecker,
-            repository,
-            cancellationToken
-        );
+        var id = await Album.CreateAsync(command, categoryChecker, repository, cancellationToken);
 
         return id;
     }

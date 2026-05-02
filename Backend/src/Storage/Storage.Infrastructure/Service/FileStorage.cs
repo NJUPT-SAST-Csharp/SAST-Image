@@ -1,10 +1,8 @@
 ﻿using System.IO.Pipelines;
-using Microsoft.AspNetCore.Http;
 using Minio;
 using Minio.DataModel.Args;
 using Storage.Application.Model;
 using Storage.Application.Service;
-using Storage.Infrastructure.Models;
 
 namespace Storage.Infrastructure.Service;
 

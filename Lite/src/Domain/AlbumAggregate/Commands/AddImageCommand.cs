@@ -9,7 +9,7 @@ public sealed record class AddImageCommand(
     AlbumId Album,
     ImageTitle Title,
     ImageTags Tags,
-    IImageFile ImageFile,
+    ImageFile File,
     Actor Actor
 ) : ICommand<ImageId> { }
 

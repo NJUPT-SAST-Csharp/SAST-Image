@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Security.Claims;
 using Domain.UserAggregate.UserEntity;
 
 namespace Domain.Shared;
@@ -24,38 +25,46 @@ public readonly record struct Actor
 
 public static class ClaimsPrincipalExtensions
 {
-    public static bool TryFetchClaim(this ClaimsPrincipal user, string claim, out string? value)
+    extension(ClaimsPrincipal user)
     {
-        var c = user.FindFirst(claim);
-        value = c?.Value;
-        return c is not null;
-    }
-
-    public static bool TryFetchId(this ClaimsPrincipal user, out long id)
-    {
-        if (user.TryFetchClaim("id", out string? claim))
+        public bool TryFetchClaim(string claim, [NotNullWhen(true)] out string? value)
         {
-            bool result = long.TryParse(claim, out id);
-            return result;
+            var c = user.FindFirst(claim);
+            value = c?.Value;
+            return c is not null;
         }
-        id = 0;
-        return false;
-    }
 
-    public static bool HasRole(this ClaimsPrincipal user, Role role)
-    {
-        foreach (var r in user.FindAll("role"))
+        public bool TryFetchUsername([NotNullWhen(true)] out string? username)
         {
-            if (
-                r is { } roleClaim
-                && string.Equals(
-                    roleClaim.Value,
-                    role.ToString(),
-                    StringComparison.InvariantCultureIgnoreCase
+            return user.TryFetchClaim("username", out username);
+        }
+
+        public bool TryFetchId(out long id)
+        {
+            if (user.TryFetchClaim("id", out string? claim))
+            {
+                bool result = long.TryParse(claim, out id);
+                return result;
+            }
+            id = 0;
+            return false;
+        }
+
+        public bool HasRole(Role role)
+        {
+            foreach (var r in user.FindAll("role"))
+            {
+                if (
+                    r is { } roleClaim
+                    && string.Equals(
+                        roleClaim.Value,
+                        role.ToString(),
+                        StringComparison.InvariantCultureIgnoreCase
+                    )
                 )
-            )
-                return true;
+                    return true;
+            }
+            return false;
         }
-        return false;
     }
 }
