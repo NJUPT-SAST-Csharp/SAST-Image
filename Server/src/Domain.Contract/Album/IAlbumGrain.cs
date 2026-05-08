@@ -1,5 +1,5 @@
-﻿global using AlbumId = long;
-using Domain.Album.Image;
+﻿using Domain.Album.Image;
+using Domain.Category;
 using Domain.Filters;
 
 namespace Domain.Album;

@@ -19,11 +19,11 @@ public sealed class ImageModel
 
     internal ImageModel(AlbumImageAddedEvent e)
     {
-        Id = e.ImageId;
+        Id = e.ImageId.Value;
         AlbumId = e.Id.Value;
         Title = e.Title.Value;
         Tags = e.Tags.Value;
         UploadedAt = e.Timestamp;
-        UploaderId = e.Uploader.Id;
+        UploaderId = e.Uploader.Id.Value;
     }
 }

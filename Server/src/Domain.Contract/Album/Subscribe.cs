@@ -1,4 +1,6 @@
-﻿namespace Domain.Album;
+﻿using Domain.User;
+
+namespace Domain.Album;
 
 public sealed record class Subscribe(AlbumId Album, UserId User) { }
 

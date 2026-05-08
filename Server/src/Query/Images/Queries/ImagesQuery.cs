@@ -78,7 +78,7 @@ public sealed class ImagesQueryHandler(QueryDbContext context)
                 request.AuthorId,
                 request.AlbumId,
                 request.Cursor,
-                request.Actor.Id,
+                request.Actor.Id.Value,
                 request.Actor.IsAuthenticated,
                 request.Actor.IsAdmin
             )

@@ -1,5 +1,4 @@
-﻿global using UserId = long;
-using Domain.Filters;
+﻿using Domain.Filters;
 
 namespace Domain.User;
 
@@ -9,7 +8,7 @@ public interface IUserGrain : IGrainWithIntegerKey
     [EnsureUniqueId]
     [AllowRecordNotExists]
     [Alias("user_register")]
-    ValueTask<long> Register(Username username, Nickname Nickname, Biography Biography);
+    ValueTask<UserId> Register(Username username, Nickname Nickname, Biography Biography);
 
     [AccessControl]
     [Alias("user_update_profile")]

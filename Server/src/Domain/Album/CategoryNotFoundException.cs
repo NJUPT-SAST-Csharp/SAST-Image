@@ -1,4 +1,6 @@
-﻿namespace Domain.Album;
+﻿using Domain.Category;
+
+namespace Domain.Album;
 
 [Alias("exception_category_not_found")]
 [GenerateSerializer(GenerateFieldIds = GenerateFieldIds.PublicProperties)]

@@ -10,6 +10,8 @@ public sealed class AlbumImageRemovedEventHandler(QueryDbContext context)
 {
     public async ValueTask Handle(AlbumImageRemovedEvent e, CancellationToken cancellationToken)
     {
-        await context.Images.Where(i => i.Id == e.ImageId).ExecuteDeleteAsync(cancellationToken);
+        await context
+            .Images.Where(i => i.Id == e.ImageId.Value)
+            .ExecuteDeleteAsync(cancellationToken);
     }
 }

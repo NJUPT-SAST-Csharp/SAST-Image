@@ -17,9 +17,9 @@ public sealed class AlbumUpdatedEventHandler(QueryDbContext context)
             album.Description = description;
         if (e.Tags is { Value: var tags })
             album.Tags = tags;
-        if (e.CategoryId is { } categoryId)
+        if (e.CategoryId is { Value: var categoryId })
             album.CategoryId = categoryId;
         if (e.Subscribes is { } subscribes)
-            album.Subscribes = subscribes;
+            album.Subscribes = Array.ConvertAll(subscribes, s => s.Value);
     }
 }

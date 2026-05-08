@@ -1,5 +1,4 @@
-﻿global using UserId = long;
-using Domain.Event;
+﻿using Domain.Event;
 using Domain.Filters;
 using Domain.User.Events;
 
@@ -19,7 +18,11 @@ internal sealed class UserGrain(IUsernameUniquenessChecker usernameChecker)
         return context.Invoke();
     }
 
-    public async ValueTask<long> Register(Username username, Nickname nickname, Biography biography)
+    public async ValueTask<UserId> Register(
+        Username username,
+        Nickname nickname,
+        Biography biography
+    )
     {
         if (await usernameChecker.ExistsAsync(username))
             throw new UsernameAlreadyExistsException(username);

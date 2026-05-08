@@ -1,5 +1,4 @@
-﻿global using CategoryId = long;
-using Domain.Filters;
+﻿using Domain.Filters;
 
 namespace Domain.Category;
 
@@ -10,7 +9,7 @@ public interface ICategoryGrain : IGrainWithIntegerKey
     [EnsureUniqueId]
     [AllowRecordNotExists]
     [Alias("category_create")]
-    ValueTask<long> Create(CategoryName name, CategoryDescription description);
+    ValueTask<CategoryId> Create(CategoryName name, CategoryDescription description);
 
     [AccessControl(Role.Admin)]
     [Alias("category_update")]

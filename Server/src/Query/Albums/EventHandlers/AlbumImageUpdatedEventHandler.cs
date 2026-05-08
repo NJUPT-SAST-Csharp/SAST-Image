@@ -16,6 +16,6 @@ public sealed class AlbumImageUpdatedEventHandler(QueryDbContext context)
         if (e.Tags is { Value: var tags })
             image.Tags = tags;
         if (e.Likes is { } likes)
-            image.Likes = likes;
+            image.Likes = Array.ConvertAll(likes, l => l.Value);
     }
 }

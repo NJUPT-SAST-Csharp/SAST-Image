@@ -87,7 +87,7 @@ public sealed class AlbumsQueryHandler(QueryDbContext context)
                 request.AuthorId,
                 request.Title,
                 request.Cursor,
-                request.Actor.Id,
+                request.Actor.Id.Value,
                 request.Actor.IsAuthenticated,
                 request.Actor.IsAdmin
             )

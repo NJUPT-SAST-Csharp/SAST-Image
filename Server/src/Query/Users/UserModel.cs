@@ -16,7 +16,7 @@ public sealed class UserModel
 
     internal UserModel(UserRegisteredEvent e)
     {
-        Id = e.Id;
+        Id = e.Id.Value;
         Username = e.Username.Value;
         Nickname = e.Nickname.Value;
         RegisteredAt = DateTime.UtcNow;

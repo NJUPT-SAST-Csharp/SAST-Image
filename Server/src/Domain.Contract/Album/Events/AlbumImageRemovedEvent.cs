@@ -1,4 +1,5 @@
-﻿using Domain.Event;
+﻿using Domain.Album.Image;
+using Domain.Event;
 
 namespace Domain.Album.Events;
 

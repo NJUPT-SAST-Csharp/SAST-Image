@@ -11,7 +11,7 @@ public sealed class CategoryCreatedEventHandler(QueryDbContext context)
     {
         CategoryModel category = new()
         {
-            Id = e.Id,
+            Id = e.Id.Value,
             Name = e.Name.Value,
             Description = e.Description.Value,
         };

@@ -4,6 +4,7 @@ using Domain.Album.Image;
 using Domain.Category;
 using Domain.Event;
 using Domain.Filters;
+using Domain.User;
 
 namespace Domain.Album;
 
@@ -16,7 +17,7 @@ internal sealed class AlbumGrain : DomainGrain<AlbumState>, IAlbumGrain
         CategoryId categoryId
     )
     {
-        if (await GrainFactory.GetGrain<ICategoryGrain>(categoryId).Exists() is false)
+        if (await GrainFactory.GetGrain<ICategoryGrain>(categoryId.Value).Exists() is false)
             throw new CategoryNotFoundException(categoryId);
 
         RaiseEvent(new AlbumCreatedEvent(new(Id), title, description, tags, categoryId, Actor));
@@ -45,9 +46,9 @@ internal sealed class AlbumGrain : DomainGrain<AlbumState>, IAlbumGrain
             throw new ForbiddenException();
         if (
             categoryId is { } id
-            && await GrainFactory.GetGrain<ICategoryGrain>(id).Exists() is false
+            && await GrainFactory.GetGrain<ICategoryGrain>(id.Value).Exists() is false
         )
-            throw new CategoryNotFoundException(categoryId.Value);
+            throw new CategoryNotFoundException(id);
 
         RaiseEvent(new AlbumUpdatedEvent(Id, title, description, tags, categoryId));
     }

@@ -1,5 +1,4 @@
-﻿global using CategoryId = long;
-using Domain.Category.Events;
+﻿using Domain.Category.Events;
 using Domain.Event;
 
 namespace Domain.Category;
