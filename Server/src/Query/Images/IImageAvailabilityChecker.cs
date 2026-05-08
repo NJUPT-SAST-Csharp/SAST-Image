@@ -1,0 +1,12 @@
+﻿using Domain;
+
+namespace Query.Images;
+
+public interface IImageAvailabilityChecker
+{
+    public Task<bool> CheckAsync(
+        ImageId id,
+        Actor actor,
+        CancellationToken cancellationToken = default
+    );
+}

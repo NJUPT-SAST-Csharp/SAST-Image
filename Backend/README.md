@@ -1,1 +1,0 @@
-﻿# SAST-Image-Backend

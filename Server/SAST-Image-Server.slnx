@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/Aspire/">
+    <Project Path="src/AppHost/AppHost.csproj" Id="bf2d3db2-5df9-410a-b4e5-d46d49ae753d" />
+    <Project Path="src/ServiceDefaults/ServiceDefaults.csproj" Id="51755c92-1a4b-44f1-8713-97a47fd43d92" />
+  </Folder>
+  <Project Path="src/Domain.Contract/Domain.Contract.csproj" Id="ca64d088-25f0-4f60-8493-0eefbd993df5" />
+  <Project Path="src/Domain/Domain.csproj" Id="e13e90cd-31e4-47f7-853a-21a290bb7f7f" />
+  <Project Path="src/Query/Query.csproj" />
+  <Project Path="src/Silo/Silo.csproj" />
+
+</Solution>
