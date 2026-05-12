@@ -24,7 +24,11 @@ public static class IServiceColletionExtensions
                     .UseNpgsql(configuration.GetConnectionString("Query"))
                     .UseSnakeCaseNamingConvention()
             );
-            services.AddMediator(options => options.ServiceLifetime = ServiceLifetime.Scoped);
+            services.AddMediator(options =>
+            {
+                options.GenerateTypesAsInternal = true;
+                options.ServiceLifetime = ServiceLifetime.Scoped;
+            });
             services.AddHostedService<QueryService>();
 
             return services;

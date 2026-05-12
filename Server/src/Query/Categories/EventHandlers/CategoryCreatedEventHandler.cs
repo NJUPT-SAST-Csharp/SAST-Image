@@ -1,5 +1,6 @@
 ﻿using Domain.Category.Events;
 using Domain.Event;
+using Mediator;
 using Query.Database;
 
 namespace Query.Categories.EventHandlers;
@@ -7,7 +8,7 @@ namespace Query.Categories.EventHandlers;
 public sealed class CategoryCreatedEventHandler(QueryDbContext context)
     : IDomainEventHandler<CategoryCreatedEvent>
 {
-    public async ValueTask Handle(CategoryCreatedEvent e, CancellationToken cancellationToken)
+    public async ValueTask<Unit> Handle(CategoryCreatedEvent e, CancellationToken cancellationToken)
     {
         CategoryModel category = new()
         {
@@ -17,5 +18,7 @@ public sealed class CategoryCreatedEventHandler(QueryDbContext context)
         };
 
         await context.Categories.AddAsync(category, cancellationToken);
+
+        return Unit.Value;
     }
 }

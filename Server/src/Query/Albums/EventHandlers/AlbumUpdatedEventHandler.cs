@@ -1,5 +1,6 @@
 ﻿using Domain.Album.Events;
 using Domain.Event;
+using Mediator;
 using Query.Database;
 
 namespace Query.Albums.EventHandlers;
@@ -7,7 +8,7 @@ namespace Query.Albums.EventHandlers;
 public sealed class AlbumUpdatedEventHandler(QueryDbContext context)
     : IDomainEventHandler<AlbumUpdatedEvent>
 {
-    public async ValueTask Handle(AlbumUpdatedEvent e, CancellationToken cancellationToken)
+    public async ValueTask<Unit> Handle(AlbumUpdatedEvent e, CancellationToken cancellationToken)
     {
         var album = await context.Albums.GetAsync(album => album.Id == e.Id, cancellationToken);
 
@@ -21,5 +22,7 @@ public sealed class AlbumUpdatedEventHandler(QueryDbContext context)
             album.CategoryId = categoryId;
         if (e.Subscribes is { } subscribes)
             album.Subscribes = Array.ConvertAll(subscribes, s => s.Value);
+
+        return Unit.Value;
     }
 }

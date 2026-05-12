@@ -1,5 +1,6 @@
 ﻿using Domain.Album.Image;
 using Domain.Event;
+using Domain.File;
 
 namespace Domain.Album.Events;
 
@@ -8,6 +9,6 @@ public sealed record AlbumImageAddedEvent(
     ImageId ImageId,
     ImageTitle Title,
     ImageTags Tags,
-    ImageFile File,
+    ImageFileKey File,
     Actor Uploader
 ) : DomainEventBase;

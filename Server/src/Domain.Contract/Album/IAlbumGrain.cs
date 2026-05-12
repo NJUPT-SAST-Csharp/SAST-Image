@@ -1,5 +1,6 @@
 ﻿using Domain.Album.Image;
 using Domain.Category;
+using Domain.File;
 using Domain.Filters;
 
 namespace Domain.Album;
@@ -41,7 +42,7 @@ public interface IAlbumGrain : IGrainWithIntegerKey
 
     [AccessControl]
     [Alias("album_add_image")]
-    public ValueTask AddImage(ImageId id, ImageTitle title, ImageTags tags, ImageFile file);
+    public ValueTask AddImage(ImageId id, ImageTitle title, ImageTags tags, ImageFileKey file);
 
     [AccessControl]
     [Alias("album_update_image")]

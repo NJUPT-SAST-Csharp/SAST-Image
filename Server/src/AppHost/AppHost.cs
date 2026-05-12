@@ -1,14 +1,22 @@
 var builder = DistributedApplication.CreateBuilder(args);
 
+var domainConnection = builder.AddConnectionString("Domain");
+var queryConnection = builder.AddConnectionString("Query");
+var storageConnection = builder.AddConnectionString("Storage");
+
+var silo = builder.AddProject<Projects.Silo>("Silo").WithReference(domainConnection);
+
 builder
-    .AddProject<Projects.Silo>("silo")
-    .WithEnvironment(
-        "ConnectionStrings__Domain",
-        "Server=10.0.0.153;Port=5444;Database=server;User Id=postgres;Password=123456"
-    )
-    .WithEnvironment(
-        "ConnectionStrings__Redis",
-        "10.0.0.153:6379,password=123456,abortConnect=False"
-    );
+    .AddProject<Projects.Query_Api>("Query-Api")
+    .WithReference(queryConnection)
+    .WithReference(domainConnection)
+    .WaitFor(silo)
+    .WithReplicas(3);
+
+builder
+    .AddProject<Projects.Storage_Api>("Storage-Api")
+    .WithReference(domainConnection)
+    .WithReference(storageConnection)
+    .WaitFor(silo);
 
 builder.Build().Run();

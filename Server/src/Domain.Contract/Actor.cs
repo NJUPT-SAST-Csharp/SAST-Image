@@ -4,6 +4,9 @@ using Domain.User;
 
 namespace Domain;
 
+[Immutable]
+[Alias(nameof(Actor))]
+[GenerateSerializer(GenerateFieldIds = GenerateFieldIds.PublicProperties)]
 public sealed record Actor
 {
     public UserId Id { get; init; }

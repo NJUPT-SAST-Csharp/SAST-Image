@@ -5,6 +5,7 @@ using Domain.User.Events;
 
 namespace Domain.Event;
 
+[Immutable]
 [JsonPolymorphic]
 // Category
 [DerivedEvent<CategoryCreatedEvent>]
@@ -22,7 +23,7 @@ namespace Domain.Event;
 [DerivedEvent<AlbumImageAddedEvent>]
 [DerivedEvent<AlbumImageUpdatedEvent>]
 [DerivedEvent<AlbumImageRemovedEvent>]
-public abstract record class DomainEventBase : Mediator.INotification
+public abstract record class DomainEventBase : Mediator.IRequest
 {
     public DateTime Timestamp { get; init; } = DateTime.UtcNow;
 }
@@ -30,5 +31,5 @@ public abstract record class DomainEventBase : Mediator.INotification
 public sealed class DerivedEventAttribute<TEvent> : DerivedAttribute<TEvent, DomainEventBase>
     where TEvent : DomainEventBase;
 
-public interface IDomainEventHandler<TDomainEvent> : Mediator.INotificationHandler<TDomainEvent>
+public interface IDomainEventHandler<TDomainEvent> : Mediator.IRequestHandler<TDomainEvent>
     where TDomainEvent : DomainEventBase;

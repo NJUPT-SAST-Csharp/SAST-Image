@@ -55,7 +55,6 @@ namespace Query.Migrations
                         .HasDatabaseName("ix_checkpoints_grain_id");
 
                     b.HasIndex("Timestamp")
-                        .IsUnique()
                         .HasDatabaseName("ix_checkpoints_timestamp");
 
                     b.ToTable("checkpoints", "query");

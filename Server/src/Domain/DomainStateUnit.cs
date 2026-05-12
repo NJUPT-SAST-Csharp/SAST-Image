@@ -1,6 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 using Domain.Album;
 using Domain.Category;
+using Domain.Event;
 using Domain.User;
 
 namespace Domain;
@@ -22,6 +23,7 @@ public sealed class DomainStateUnit
 public abstract class DomainStateBase
 {
     public bool RecordExists { get; set; } = false;
+    public abstract void Apply(DomainEventBase e);
 }
 
 internal sealed class DerivedStateAttribute<TState> : DerivedAttribute<TState, DomainStateBase>

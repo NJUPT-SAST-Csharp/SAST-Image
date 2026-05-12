@@ -1,13 +1,14 @@
 ﻿using Domain.Event;
 using Domain.User.Events;
+using Mediator;
 
 namespace Query.Users.EventHandlers;
 
 public sealed class HeaderUpdatedEventHandler : IDomainEventHandler<HeaderUpdatedEvent>
 {
-    public ValueTask Handle(HeaderUpdatedEvent request, CancellationToken cancellationToken)
+    public ValueTask<Unit> Handle(HeaderUpdatedEvent request, CancellationToken cancellationToken)
     {
         //Silence.
-        return ValueTask.CompletedTask;
+        return Unit.ValueTask;
     }
 }

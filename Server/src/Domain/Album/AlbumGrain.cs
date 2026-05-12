@@ -3,6 +3,7 @@ using Domain.Album.Events;
 using Domain.Album.Image;
 using Domain.Category;
 using Domain.Event;
+using Domain.File;
 using Domain.Filters;
 using Domain.User;
 
@@ -53,7 +54,7 @@ internal sealed class AlbumGrain : DomainGrain<AlbumState>, IAlbumGrain
         RaiseEvent(new AlbumUpdatedEvent(Id, title, description, tags, categoryId));
     }
 
-    public ValueTask AddImage(ImageId id, ImageTitle title, ImageTags tags, ImageFile file)
+    public ValueTask AddImage(ImageId id, ImageTitle title, ImageTags tags, ImageFileKey file)
     {
         if (Actor.Id != State.Author && Actor.IsAdmin is false)
             throw new ForbiddenException();
@@ -140,7 +141,7 @@ internal sealed class AlbumState : DomainStateBase, IDomainEventApplyable
     public UserId[] Subscribes { get; private set; } = [];
     public ImageState[] Images { get; private set; } = [];
 
-    public void Apply(DomainEventBase e)
+    public override void Apply(DomainEventBase e)
     {
         (Author, Images, Subscribes, RecordExists) = e switch
         {

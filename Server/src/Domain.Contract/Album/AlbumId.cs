@@ -3,7 +3,7 @@
 namespace Domain.Album;
 
 [OpenJsonConverter<AlbumId>]
-public readonly record struct AlbumId(long Value) : ITypedId<AlbumId, long>
+public readonly record struct AlbumId(long Value) : ITypedId<AlbumId>
 {
     public static AlbumId GenerateNew() => new(Snowflake.NewId);
 

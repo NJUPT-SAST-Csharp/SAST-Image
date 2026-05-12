@@ -19,6 +19,7 @@ public sealed class UserModel
         Id = e.Id.Value;
         Username = e.Username.Value;
         Nickname = e.Nickname.Value;
+        Biography = e.Biography.Value;
         RegisteredAt = DateTime.UtcNow;
     }
 }

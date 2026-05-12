@@ -1,6 +1,7 @@
 ﻿namespace Domain.Event;
 
 [Alias("domain_event")]
+[Immutable]
 [GenerateSerializer(GenerateFieldIds = GenerateFieldIds.PublicProperties)]
 public sealed class DomainEventUnit
 {

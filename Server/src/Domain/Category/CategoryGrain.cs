@@ -41,7 +41,7 @@ internal sealed class CategoryState : DomainStateBase, IDomainEventApplyable
 {
     public CategoryName Name { get; private set; }
 
-    public void Apply(DomainEventBase e)
+    public override void Apply(DomainEventBase e)
     {
         (Name, RecordExists) = e switch
         {

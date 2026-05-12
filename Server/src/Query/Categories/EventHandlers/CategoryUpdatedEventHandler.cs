@@ -1,5 +1,6 @@
 ﻿using Domain.Category.Events;
 using Domain.Event;
+using Mediator;
 using Query.Database;
 
 namespace Query.Categories.EventHandlers;
@@ -7,7 +8,7 @@ namespace Query.Categories.EventHandlers;
 public sealed class CategoryUpdatedEventHandler(QueryDbContext context)
     : IDomainEventHandler<CategoryUpdatedEvent>
 {
-    public async ValueTask Handle(CategoryUpdatedEvent e, CancellationToken cancellationToken)
+    public async ValueTask<Unit> Handle(CategoryUpdatedEvent e, CancellationToken cancellationToken)
     {
         var category = await context.Categories.GetAsync(c => c.Id == e.Id, cancellationToken);
 
@@ -15,5 +16,7 @@ public sealed class CategoryUpdatedEventHandler(QueryDbContext context)
             category.Name = name;
         if (e.Description is { Value: var description })
             category.Description = description;
+
+        return Unit.Value;
     }
 }

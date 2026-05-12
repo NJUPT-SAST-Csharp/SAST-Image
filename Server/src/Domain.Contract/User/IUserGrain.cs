@@ -1,4 +1,5 @@
 ﻿using Domain.Filters;
+using Orleans.Concurrency;
 
 namespace Domain.User;
 
@@ -16,9 +17,9 @@ public interface IUserGrain : IGrainWithIntegerKey
 
     [AccessControl]
     [Alias("user_update_avatar")]
-    ValueTask UpdateAvatar(ImageFile file);
+    ValueTask UpdateAvatar(Immutable<byte[]> file, CancellationToken cancellationToken = default);
 
     [AccessControl]
     [Alias("user_update_header")]
-    ValueTask UpdateHeader(ImageFile file);
+    ValueTask UpdateHeader(Immutable<byte[]> file, CancellationToken cancellationToken = default);
 }

@@ -1,5 +1,6 @@
 ﻿using Domain.Album.Events;
 using Domain.Event;
+using Mediator;
 using Query.Database;
 
 namespace Query.Albums.EventHandlers;
@@ -7,7 +8,10 @@ namespace Query.Albums.EventHandlers;
 public sealed class AlbumImageUpdatedEventHandler(QueryDbContext context)
     : IDomainEventHandler<AlbumImageUpdatedEvent>
 {
-    public async ValueTask Handle(AlbumImageUpdatedEvent e, CancellationToken cancellationToken)
+    public async ValueTask<Unit> Handle(
+        AlbumImageUpdatedEvent e,
+        CancellationToken cancellationToken
+    )
     {
         var image = await context.Images.GetAsync(image => image.Id == e.Id, cancellationToken);
 
@@ -17,5 +21,7 @@ public sealed class AlbumImageUpdatedEventHandler(QueryDbContext context)
             image.Tags = tags;
         if (e.Likes is { } likes)
             image.Likes = Array.ConvertAll(likes, l => l.Value);
+
+        return Unit.Value;
     }
 }
