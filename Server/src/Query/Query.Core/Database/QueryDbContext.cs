@@ -1,0 +1,31 @@
+﻿using Microsoft.EntityFrameworkCore;
+using Query.Albums;
+using Query.Categories;
+using Query.Images;
+using Query.Users;
+using Shared.Core;
+
+namespace Query.Database;
+
+public sealed class QueryDbContext(DbContextOptions<QueryDbContext> options)
+    : DbContextWithCheckpoint<QueryDbContext>(options)
+{
+    public const string Schema = "query";
+
+    public DbSet<AlbumModel> Albums { get; init; }
+    public DbSet<ImageModel> Images { get; init; }
+    public DbSet<UserModel> Users { get; init; }
+    public DbSet<CategoryModel> Categories { get; init; }
+
+    protected override void OnModelCreatingCore(ModelBuilder builder)
+    {
+        builder.HasDefaultSchema(Schema);
+
+        QueryDbContextEntityTypeConfigurations configuration = new();
+
+        builder.ApplyConfiguration<AlbumModel>(configuration);
+        builder.ApplyConfiguration<UserModel>(configuration);
+        builder.ApplyConfiguration<CategoryModel>(configuration);
+        builder.ApplyConfiguration<ImageModel>(configuration);
+    }
+}

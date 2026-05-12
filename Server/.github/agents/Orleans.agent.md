@@ -1,8 +1,7 @@
 ---
 name: Orleans
 description: Solving Orleans
-model: GPT-5.2-Codex
-tools: ["code_search", "readfile", "find_references"]
+tools: ["code_search", "readfile", "editfiles", "find_references", "runcommandinterminal", "getwebpages"]
 ---
 
 ### Install Orleans Runtime Package

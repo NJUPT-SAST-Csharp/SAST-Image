@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>Storage</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NetVips" Version="3.2.0" />
+    <PackageReference Include="NetVips.Native.linux-x64" Version="8.18.2" />
+    <PackageReference Include="NetVips.Native.win-x64" Version="8.18.2" />
+
+    <PackageReference
+      Include="Microsoft.Extensions.Options.ConfigurationExtensions"
+      Version="10.0.7"
+    />
+
+    <PackageReference Include="Mediator.SourceGenerator" Version="3.0.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Shared\Shared.Core\Shared.Core.csproj" />
+  </ItemGroup>
+</Project>
