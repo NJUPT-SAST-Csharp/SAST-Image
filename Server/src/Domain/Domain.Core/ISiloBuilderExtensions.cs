@@ -27,7 +27,7 @@ public static class ISiloBuilderExtensions
             builder.Services.AddSingleton<IUsernameUniquenessChecker, UsernameUniquenessChecker>();
             builder.Services.AddSingleton<IIdUniquenessChecker, IdUniquenessChecker>();
 
-            builder.Services.AddDbContextFactory<DomainDbContext>(options =>
+            builder.Services.AddPooledDbContextFactory<DomainDbContext>(options =>
                 options
                     .UseNpgsql(
                         builder.Configuration.GetConnectionString("Domain"),

@@ -38,7 +38,7 @@ internal sealed class UserGrain(IUsernameUniquenessChecker usernameChecker)
         CancellationToken cancellationToken = default
     )
     {
-        var manager = GrainFactory.GetGrain<IFileManagerGrain>(Guid.Empty);
+        var manager = GrainFactory.GetGrain<IFileSyncGrain>(Guid.Empty);
         var key = await manager.UploadAsync(file, cancellationToken);
         RaiseEvent(new AvatarUpdatedEvent(Id, key));
     }
@@ -48,7 +48,7 @@ internal sealed class UserGrain(IUsernameUniquenessChecker usernameChecker)
         CancellationToken cancellationToken = default
     )
     {
-        var manager = GrainFactory.GetGrain<IFileManagerGrain>(Guid.Empty);
+        var manager = GrainFactory.GetGrain<IFileSyncGrain>(Guid.Empty);
         var key = await manager.UploadAsync(file, cancellationToken);
         RaiseEvent(new HeaderUpdatedEvent(Id, key));
     }

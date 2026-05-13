@@ -53,6 +53,11 @@ public abstract partial class EventSyncBackgroundService<TService, TDbContext>(
                 //Silence and skip
                 continue;
             }
+            catch (OperationCanceledException)
+            {
+                //Silence and skip
+                continue;
+            }
             catch (MissingMessageHandlerException)
             {
                 var type = e.Type;
@@ -215,7 +220,6 @@ file static class DbContextExtensions
     {
         // NOTE: fragile check
         public bool IsDueToDuplicate =>
-            ex.InnerException is PostgresException { Message: var message }
-            && message.Contains("duplicate key");
+            ex.InnerException is PostgresException { SqlState: PostgresErrorCodes.UniqueViolation };
     }
 }

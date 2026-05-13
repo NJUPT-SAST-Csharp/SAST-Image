@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Query.Albums;
-using Query.Categories;
-using Query.Images;
-using Query.Users;
+using Query.Album;
+using Query.Category;
+using Query.Image;
+using Query.User;
 using Shared.Core;
 
 namespace Query.Database;

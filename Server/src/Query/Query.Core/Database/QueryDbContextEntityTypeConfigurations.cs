@@ -1,9 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Query.Albums;
-using Query.Categories;
-using Query.Images;
-using Query.Users;
+using Query.Album;
+using Query.Category;
+using Query.Image;
+using Query.User;
 
 namespace Query.Database;
 

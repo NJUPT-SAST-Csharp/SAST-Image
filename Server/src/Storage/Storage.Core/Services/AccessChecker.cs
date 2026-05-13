@@ -2,6 +2,7 @@
 using Domain.ValueObject;
 using Microsoft.EntityFrameworkCore;
 using Storage.Database;
+using Storage.User;
 
 namespace Storage.Services;
 

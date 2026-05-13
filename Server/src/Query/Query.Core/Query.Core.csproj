@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Domain\Domain.Contract\Domain.Contract.csproj" />
     <ProjectReference Include="..\..\Shared\Shared.Core\Shared.Core.csproj" />
+    <ProjectReference Include="..\Query.Contract\Query.Contract.csproj" />
   </ItemGroup>
 </Project>

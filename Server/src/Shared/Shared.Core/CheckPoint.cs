@@ -8,9 +8,6 @@ public sealed record class Checkpoint
     public DateTime Timestamp { get; set; }
     public long? GrainId { get; init; } = null;
     public CheckpointStatus Status { get; init; } = CheckpointStatus.Success;
-
-    // Optimistic concurrency control, used to detect if the checkpoint has been updated by another query service instance
-    //public uint Version { get; init; }
 }
 
 public enum CheckpointStatus : byte

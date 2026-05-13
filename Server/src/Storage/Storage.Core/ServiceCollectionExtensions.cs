@@ -15,8 +15,8 @@ public static class ServiceCollectionExtensions
             services.Configure<StorageOptions>(configuration.GetRequiredSection("Storage"));
 
             services.AddScoped<IAccessChecker, AccessChecker>();
-            services.AddSingleton<ICompressProcessor, LocalCompressProcessor>();
-            services.AddSingleton<IImageFileManager, LocalImageFileManager>();
+            services.AddSingleton<LocalCompressProcessor>();
+            services.AddSingleton<LocalImageFileManager>();
 
             services.AddDbContextPool<StorageDbContext>(options =>
                 options

@@ -11,10 +11,7 @@
     <PackageReference Include="NetVips.Native.linux-x64" Version="8.18.2" />
     <PackageReference Include="NetVips.Native.win-x64" Version="8.18.2" />
 
-    <PackageReference
-      Include="Microsoft.Extensions.Options.ConfigurationExtensions"
-      Version="10.0.7"
-    />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="10.0.7" />
 
     <PackageReference Include="Mediator.SourceGenerator" Version="3.0.2">
       <PrivateAssets>all</PrivateAssets>
@@ -24,5 +21,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Shared\Shared.Core\Shared.Core.csproj" />
+    <ProjectReference Include="..\Storage.Contract\Storage.Contract.csproj" />
   </ItemGroup>
 </Project>
