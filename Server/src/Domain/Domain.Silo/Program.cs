@@ -1,4 +1,5 @@
 using Domain;
+using Microsoft.EntityFrameworkCore;
 using Orleans.Dashboard;
 
 var builder = WebApplication.CreateBuilder(args);

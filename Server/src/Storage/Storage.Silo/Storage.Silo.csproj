@@ -25,10 +25,4 @@
     <ProjectReference Include="..\Storage.Core\Storage.Core.csproj" />
     <ProjectReference Include="..\..\Shared\ServiceDefaults\ServiceDefaults.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\Domain\Domain.Contract\Domain.Contract.csproj" />
-    <ProjectReference Include="..\..\Query\Query.Contract\Query.Contract.csproj" />
-    <ProjectReference Include="..\Storage.Contract\Storage.Contract.csproj" />
-  </ItemGroup>
 </Project>

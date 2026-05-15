@@ -30,3 +30,30 @@ public sealed class UserProfileQueryHandler(QueryDbContext context)
         return await Query(context, request.User.Value).WaitAsync(cancellationToken);
     }
 }
+
+public sealed class UserByUsernameQueryHandler(QueryDbContext context)
+    : IQueryHandler<UserByUsernameQuery, UserProfileDto?>
+{
+    private static readonly Func<QueryDbContext, string, Task<UserProfileDto?>> Query =
+        EF.CompileAsyncQuery(
+            (QueryDbContext context, string username) =>
+                context
+                    .Users.AsNoTracking()
+                    .Where(user => EF.Functions.ILike(user.Username, username))
+                    .Select(user => new UserProfileDto(
+                        user.Id,
+                        user.Username,
+                        user.Nickname,
+                        user.Biography
+                    ))
+                    .FirstOrDefault()
+        );
+
+    public async ValueTask<UserProfileDto?> Handle(
+        UserByUsernameQuery request,
+        CancellationToken cancellationToken
+    )
+    {
+        return await Query(context, request.Username.Value).WaitAsync(cancellationToken);
+    }
+}

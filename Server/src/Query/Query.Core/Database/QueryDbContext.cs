@@ -19,6 +19,13 @@ public sealed class QueryDbContext(DbContextOptions<QueryDbContext> options)
 
     protected override void OnModelCreatingCore(ModelBuilder builder)
     {
+        if (Database.ProviderName != "Microsoft.EntityFrameworkCore.InMemory")
+        {
+            builder.Model.SetValueGenerationStrategy(
+                Npgsql.EntityFrameworkCore.PostgreSQL.Metadata.NpgsqlValueGenerationStrategy.None
+            );
+        }
+
         builder.HasDefaultSchema(Schema);
 
         QueryDbContextEntityTypeConfigurations configuration = new();

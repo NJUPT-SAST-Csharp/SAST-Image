@@ -1,0 +1,141 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <_CargoManifest>$(MSBuildThisFileDirectory)platform/Cargo.toml</_CargoManifest>
+    <_CargoWorkingDirectory>$(MSBuildThisFileDirectory)platform</_CargoWorkingDirectory>
+    <_CargoTargetDirectory>$(MSBuildThisFileDirectory)platform/target</_CargoTargetDirectory>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <_NativeBuild Include="win-x64">
+      <RustTarget>x86_64-pc-windows-msvc</RustTarget>
+      <LibraryName>Sast.dll</LibraryName>
+    </_NativeBuild>
+
+    <_NativeBuild Include="win-arm64">
+      <RustTarget>aarch64-pc-windows-msvc</RustTarget>
+      <LibraryName>Sast.dll</LibraryName>
+    </_NativeBuild>
+
+    <_NativeBuild Include="linux-x64">
+      <RustTarget>x86_64-unknown-linux-gnu</RustTarget>
+      <LibraryName>libsast.so</LibraryName>
+    </_NativeBuild>
+
+    <_NativeBuild Include="linux-arm64">
+      <RustTarget>aarch64-unknown-linux-gnu</RustTarget>
+      <LibraryName>libsast.so</LibraryName>
+    </_NativeBuild>
+
+    <_NativeBuild Include="osx-x64">
+      <RustTarget>x86_64-apple-darwin</RustTarget>
+      <LibraryName>libsast.dylib</LibraryName>
+    </_NativeBuild>
+
+    <_NativeBuild Include="osx-arm64">
+      <RustTarget>aarch64-apple-darwin</RustTarget>
+      <LibraryName>libsast.dylib</LibraryName>
+    </_NativeBuild>
+  </ItemGroup>
+
+  <PropertyGroup>
+    <_CargoProfile Condition="'$(Configuration)' == 'Release'">release</_CargoProfile>
+    <_CargoProfile Condition="'$(_CargoProfile)' == ''">debug</_CargoProfile>
+    <_CargoReleaseArg Condition="'$(Configuration)' == 'Release'">--release</_CargoReleaseArg>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <_HostIsWindows Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' == 'true'">true</_HostIsWindows>
+    <_HostIsMacOS Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))' == 'true'">true</_HostIsMacOS>
+    <_HostIsLinux Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' == 'true'">true</_HostIsLinux>
+
+    <_HostProcessArch>$([System.Runtime.InteropServices.RuntimeInformation]::ProcessArchitecture)</_HostProcessArch>
+
+    <_HostRustTarget Condition="'$(_HostIsWindows)' == 'true' and '$(_HostProcessArch)' == 'Arm64'">aarch64-pc-windows-msvc</_HostRustTarget>
+    <_HostRustTarget Condition="'$(_HostIsWindows)' == 'true' and '$(_HostRustTarget)' == ''">x86_64-pc-windows-msvc</_HostRustTarget>
+
+    <_HostRustTarget Condition="'$(_HostIsMacOS)' == 'true' and '$(_HostProcessArch)' == 'Arm64'">aarch64-apple-darwin</_HostRustTarget>
+    <_HostRustTarget Condition="'$(_HostIsMacOS)' == 'true' and '$(_HostRustTarget)' == ''">x86_64-apple-darwin</_HostRustTarget>
+
+    <_HostRustTarget Condition="'$(_HostIsLinux)' == 'true' and '$(_HostProcessArch)' == 'Arm64'">aarch64-unknown-linux-gnu</_HostRustTarget>
+    <_HostRustTarget Condition="'$(_HostIsLinux)' == 'true' and '$(_HostRustTarget)' == ''">x86_64-unknown-linux-gnu</_HostRustTarget>
+  </PropertyGroup>
+
+  <Target Name="BuildRustNativeHost"
+          BeforeTargets="CoreCompile"
+          Condition="'$(SkipRustBuild)' == ''">
+
+    <ItemGroup>
+      <_HostNativeBuild Include="@(_NativeBuild)"
+                        Condition="'%(_NativeBuild.RustTarget)' == '$(_HostRustTarget)'" />
+    </ItemGroup>
+
+    <Error Condition="'$(_HostRustTarget)' == ''"
+           Text="Unsupported host platform for Rust native build." />
+
+    <Error Condition="'@(_HostNativeBuild)' == ''"
+           Text="No native build item matched host Rust target '$(_HostRustTarget)'." />
+
+    <Message Importance="high"
+             Text="Building Rust native host asset: $(_HostRustTarget) $(_CargoReleaseArg)" />
+
+    <Exec
+      WorkingDirectory="$(_CargoWorkingDirectory)"
+      Command="cargo build --manifest-path &quot;$(_CargoManifest)&quot; --target $(_HostRustTarget) $(_CargoReleaseArg)"
+      ConsoleToMSBuild="true">
+      <Output TaskParameter="ExitCode" PropertyName="_RustHostBuildExitCode" />
+    </Exec>
+
+    <Error Condition="'$(_RustHostBuildExitCode)' != '0'"
+           Text="Rust host build failed. Exit code: $(_RustHostBuildExitCode)" />
+
+    <Error
+      Condition="!Exists('$(_CargoTargetDirectory)/$(_HostRustTarget)/$(_CargoProfile)/%(_HostNativeBuild.LibraryName)')"
+      Text="Rust host output was not found: $(_CargoTargetDirectory)/$(_HostRustTarget)/$(_CargoProfile)/%(_HostNativeBuild.LibraryName)" />
+
+    <MakeDir Directories="$(MSBuildThisFileDirectory)runtimes/%(_HostNativeBuild.Identity)/native" />
+
+    <Copy
+      SourceFiles="$(_CargoTargetDirectory)/$(_HostRustTarget)/$(_CargoProfile)/%(_HostNativeBuild.LibraryName)"
+      DestinationFiles="$(MSBuildThisFileDirectory)runtimes/%(_HostNativeBuild.Identity)/native/%(_HostNativeBuild.LibraryName)"
+      SkipUnchangedFiles="true" />
+
+    <Message Importance="high"
+             Text="Copied Rust native host asset: runtimes/%(_HostNativeBuild.Identity)/native/%(_HostNativeBuild.LibraryName)" />
+  </Target>
+
+  <Target Name="CopyNativeToOutput" AfterTargets="BuildRustNativeHost">
+    <ItemGroup>
+      <_NativeOutputFiles Include="$(MSBuildThisFileDirectory)runtimes\**\native\*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(_NativeOutputFiles)"
+          DestinationFolder="$(OutputPath)"
+          SkipUnchangedFiles="true" />
+  </Target>
+
+  <Target Name="PublishWebApp" BeforeTargets="GetCopyToOutputDirectoryItems">
+    <PropertyGroup>
+      <_AppDir>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\App'))</_AppDir>
+      <_WasmPublishDir>$(_AppDir)\bin\$(Configuration)\net10.0-browser\publish\wwwroot\</_WasmPublishDir>
+    </PropertyGroup>
+
+    <Exec
+      Command="dotnet publish &quot;$(MSBuildThisFileDirectory)..\App\App.csproj&quot; -c $(Configuration)"
+      ConsoleToMSBuild="true" />
+
+    <ItemGroup>
+      <_WasmFiles Include="$(_WasmPublishDir)**\*" />
+
+      <ContentWithTargetPath Include="@(_WasmFiles)">
+        <TargetPath>wwwroot\%(RecursiveDir)%(Filename)%(Extension)</TargetPath>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </ContentWithTargetPath>
+    </ItemGroup>
+  </Target>
+
+</Project>

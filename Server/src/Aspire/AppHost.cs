@@ -53,6 +53,15 @@ builder
     .WaitFor(query3)
     .WaitFor(storage);
 
+builder
+    .AddProject<Projects.WebApi>("webapi")
+    .WithReference(orleans.AsClient())
+    .WithAdoNetClustering()
+    .WithConnectionString("Domain")
+    .WithConnectionString("Query")
+    .WithConnectionString("Storage")
+    .WaitFor(domain);
+
 builder.Build().Run();
 
 file static class Rua

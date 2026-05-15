@@ -13,6 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\WebApi\WebApi.csproj" />
     <ProjectReference Include="..\Query\Query.Silo\Query.Silo.csproj" />
     <ProjectReference Include="..\Domain\Domain.Silo\Domain.Silo.csproj" />
     <ProjectReference Include="..\Storage\Storage.Silo\Storage.Silo.csproj" />

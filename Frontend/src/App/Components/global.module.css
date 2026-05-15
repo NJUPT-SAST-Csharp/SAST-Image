@@ -1,0 +1,170 @@
+/* ── MD3 Dark Theme ───────────────────────────────── */
+:root {
+  --bg: #111318;
+  --surface: #1a1c22;
+  --surface-high: #23252d;
+  --primary: #90a4ff;
+  --primary-container: #2a2f4a;
+  --on-surface: #e2e2e9;
+  --on-surface-variant: #b0b4c0;
+  --outline: #3e4150;
+  --error: #ff8a85;
+  --radius: 16px;
+  --radius-sm: 10px;
+  --elevation-1: 0 1px 3px rgba(0,0,0,.4),0 1px 2px rgba(0,0,0,.3);
+  --elevation-2: 0 3px 6px rgba(0,0,0,.35),0 2px 4px rgba(0,0,0,.25);
+  --transition: 200ms cubic-bezier(.2,0,0,1);
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+body {
+  font-family: 'Inter',system-ui,-apple-system,sans-serif;
+  background: var(--bg);
+  color: var(--on-surface);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+#app {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 1rem 2rem;
+}
+
+/* ── Buttons ──────────────────────────────────────── */
+.md-btn {
+  background: var(--primary-container);
+  color: var(--primary);
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: .55rem 1.3rem;
+  font-size: .88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition);
+  letter-spacing: .01em;
+
+  &:hover { filter: brightness(1.2) }
+
+  &.primary {
+    background: var(--primary);
+    color: var(--bg);
+  }
+
+  &.text {
+    background: transparent;
+    color: var(--primary);
+    padding: .4rem .8rem;
+
+    &:hover { background: var(--primary-container) }
+  }
+
+  &.full { width: 100% }
+
+  &.sm {
+    padding: .3rem .6rem;
+    font-size: .78rem;
+  }
+}
+
+/* ── Fields ───────────────────────────────────────── */
+.md-field {
+  width: 100%;
+  padding: .75rem 1rem;
+  margin-bottom: .85rem;
+  background: var(--surface-high);
+  border: 1px solid var(--outline);
+  border-radius: var(--radius-sm);
+  color: var(--on-surface);
+  font-size: .95rem;
+  outline: none;
+  transition: border-color var(--transition);
+
+  &:focus { border-color: var(--primary) }
+  &::placeholder { color: var(--on-surface-variant) }
+}
+
+/* ── Shared ───────────────────────────────────────── */
+.page-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+
+  h2 { font-size: 1.4rem; font-weight: 600 }
+}
+
+.loading {
+  text-align: center;
+  padding: 3rem 0;
+  color: var(--on-surface-variant);
+}
+
+.error {
+  color: var(--error);
+  font-size: .85rem;
+  margin-bottom: .5rem;
+}
+
+.empty {
+  text-align: center;
+  padding: 3rem 0;
+  color: var(--on-surface-variant);
+  font-size: .95rem;
+}
+
+.main-content { min-height: 60vh }
+
+/* ── Card (shared) ────────────────────────────────── */
+.md-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--elevation-1);
+  overflow: hidden;
+  transition: box-shadow var(--transition), transform var(--transition);
+  cursor: pointer;
+
+  &:hover {
+    box-shadow: var(--elevation-2);
+    transform: translateY(-2px);
+  }
+}
+
+.md-card-body {
+  padding: 1rem 1.25rem;
+
+  h3 {
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin-bottom: .35rem;
+    color: var(--on-surface);
+  }
+
+  p {
+    font-size: .85rem;
+    color: var(--on-surface-variant);
+    line-height: 1.5;
+    margin-bottom: .5rem;
+  }
+}
+
+.md-card-meta {
+  display: flex;
+  gap: 1rem;
+  font-size: .78rem;
+  color: var(--on-surface-variant);
+  margin-top: .5rem;
+}
+
+.md-card-actions {
+  padding: .5rem 1.25rem 1rem;
+  display: flex;
+  gap: .5rem;
+}
+
+/* ── Image card overrides ────────────────────────── */
+.image-card {
+  .md-card-body { padding: .75rem 1rem }
+  h4 { font-size: .9rem; margin-bottom: .25rem }
+}

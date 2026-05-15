@@ -15,3 +15,7 @@ public sealed record class UserProfileDto(
 [Alias(nameof(UserProfileQuery))]
 [GenerateSerializer(GenerateFieldIds = GenerateFieldIds.PublicProperties)]
 public sealed record UserProfileQuery(UserId User) : IQuery<UserProfileDto?>;
+
+[Alias(nameof(UserByUsernameQuery))]
+[GenerateSerializer(GenerateFieldIds = GenerateFieldIds.PublicProperties)]
+public sealed record class UserByUsernameQuery(Username Username) : IQuery<UserProfileDto?>;

@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="10.0.*" />
+  </ItemGroup>
+
+  <Target Name="PublishWebApp" BeforeTargets="GetCopyToOutputDirectoryItems">
+    <PropertyGroup>
+      <_AppDir>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\App'))</_AppDir>
+      <_WasmPublishDir>$(_AppDir)\bin\$(Configuration)\net10.0-browser\publish\wwwroot\</_WasmPublishDir>
+    </PropertyGroup>
+
+    <Exec
+      Command="dotnet publish &quot;$(MSBuildThisFileDirectory)..\App\App.csproj&quot; -c $(Configuration)"
+      ConsoleToMSBuild="true" />
+
+    <ItemGroup>
+      <_WasmFiles Include="$(_WasmPublishDir)**\*" />
+
+      <ContentWithTargetPath Include="@(_WasmFiles)">
+        <TargetPath>wwwroot\%(RecursiveDir)%(Filename)%(Extension)</TargetPath>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </ContentWithTargetPath>
+    </ItemGroup>
+  </Target>
+
+</Project>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup>
+    <_SastIsWindows Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' == 'true'">true</_SastIsWindows>
+    <_SastIsMacOS Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))' == 'true'">true</_SastIsMacOS>
+    <_SastIsLinux Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' == 'true'">true</_SastIsLinux>
+
+    <_SastProcessArch>$([System.Runtime.InteropServices.RuntimeInformation]::ProcessArchitecture)</_SastProcessArch>
+
+    <!-- Allow explicit override -->
+    <_NativeRuntime Condition="'$(_NativeRuntime)' == '' and '$(RuntimeIdentifier)' != ''">$(RuntimeIdentifier)</_NativeRuntime>
+
+    <!-- Windows -->
+    <_NativeRuntime Condition="'$(_NativeRuntime)' == '' and '$(_SastIsWindows)' == 'true' and ('$(PlatformTarget)' == 'ARM64' or '$(PlatformTarget)' == 'arm64' or '$(_SastProcessArch)' == 'Arm64')">win-arm64</_NativeRuntime>
+    <_NativeRuntime Condition="'$(_NativeRuntime)' == '' and '$(_SastIsWindows)' == 'true'">win-x64</_NativeRuntime>
+
+    <!-- macOS -->
+    <_NativeRuntime Condition="'$(_NativeRuntime)' == '' and '$(_SastIsMacOS)' == 'true' and ('$(PlatformTarget)' == 'ARM64' or '$(PlatformTarget)' == 'arm64' or '$(_SastProcessArch)' == 'Arm64')">osx-arm64</_NativeRuntime>
+    <_NativeRuntime Condition="'$(_NativeRuntime)' == '' and '$(_SastIsMacOS)' == 'true'">osx-x64</_NativeRuntime>
+
+    <!-- Linux -->
+    <_NativeRuntime Condition="'$(_NativeRuntime)' == '' and '$(_SastIsLinux)' == 'true' and ('$(PlatformTarget)' == 'ARM64' or '$(PlatformTarget)' == 'arm64' or '$(_SastProcessArch)' == 'Arm64')">linux-arm64</_NativeRuntime>
+    <_NativeRuntime Condition="'$(_NativeRuntime)' == '' and '$(_SastIsLinux)' == 'true'">linux-x64</_NativeRuntime>
+
+    <_NativeLibName Condition="'$(_NativeRuntime)' == 'win-x64'">Sast.dll</_NativeLibName>
+    <_NativeLibName Condition="'$(_NativeRuntime)' == 'win-arm64'">Sast.dll</_NativeLibName>
+
+    <_NativeLibName Condition="'$(_NativeRuntime)' == 'osx-x64'">libsast.dylib</_NativeLibName>
+    <_NativeLibName Condition="'$(_NativeRuntime)' == 'osx-arm64'">libsast.dylib</_NativeLibName>
+
+    <_NativeLibName Condition="'$(_NativeRuntime)' == 'linux-x64'">libsast.so</_NativeLibName>
+    <_NativeLibName Condition="'$(_NativeRuntime)' == 'linux-arm64'">libsast.so</_NativeLibName>
+
+    <_NativeLibPath>$(MSBuildThisFileDirectory)..\..\runtimes\$(_NativeRuntime)\native\$(_NativeLibName)</_NativeLibPath>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(_NativeRuntime)' != '' and '$(_NativeLibName)' != '' and Exists('$(_NativeLibPath)')">
+    <Content Include="$(_NativeLibPath)">
+      <Link>%(_NativeLibName)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Visible>false</Visible>
+    </Content>
+  </ItemGroup>
+
+  <Target Name="SastNativeValidateRuntime" BeforeTargets="Build"
+          Condition="'$(_NativeRuntime)' != '' and '$(_NativeLibName)' != '' and !Exists('$(_NativeLibPath)')">
+    <Warning Text="Sast.Native runtime asset was not found: $(_NativeLibPath)" />
+  </Target>
+
+</Project>

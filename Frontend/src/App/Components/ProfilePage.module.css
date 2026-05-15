@@ -1,0 +1,23 @@
+/* ── Profile ──────────────────────────────────────── */
+.profile-card {
+  display: flex;
+  gap: 1.5rem;
+  padding: 2rem;
+  align-items: center;
+
+  h3 { font-size: 1.3rem; margin-bottom: .2rem }
+}
+
+.avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: var(--primary-container);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}

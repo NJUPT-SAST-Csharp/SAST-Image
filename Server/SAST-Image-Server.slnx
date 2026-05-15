@@ -20,5 +20,7 @@
   </Folder>
   <Project Path="src/Aspire/AppHost.csproj" Id="bf2d3db2-5df9-410a-b4e5-d46d49ae753d" />
   <Project Path="src/WebApp/WebApp.csproj" />
+  <Project Path="src/WebApi/WebApi.csproj" />
+  <Project Path="../Shared/Api/Api.csproj" />
 
 </Solution>

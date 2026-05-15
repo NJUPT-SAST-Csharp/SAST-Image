@@ -1,0 +1,44 @@
+/* ── Top Bar ──────────────────────────────────────── */
+.top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--outline);
+  margin-bottom: 1.5rem;
+  position: sticky;
+  top: 0;
+  background: var(--bg);
+  z-index: 10;
+
+  nav { display: flex; gap: .25rem }
+}
+
+.logo {
+  font-size: 1.3rem;
+  font-weight: 700;
+  letter-spacing: -.02em;
+  color: var(--primary);
+}
+
+.tab {
+  background: none;
+  border: none;
+  color: var(--on-surface-variant);
+  padding: .6rem 1.4rem;
+  border-radius: var(--radius-sm);
+  font-size: .9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition);
+
+  &:hover {
+    background: var(--surface-high);
+    color: var(--on-surface);
+  }
+
+  &.active {
+    background: var(--primary-container);
+    color: var(--primary);
+  }
+}
